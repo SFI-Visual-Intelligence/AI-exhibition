@@ -66,7 +66,7 @@ https://app.inferkit.com/demo
 ### Primary tasks
 In order of priority.
 1. Construct four AI demonstrations, preferably one within each of the four topics:
-- Computer vision
+- Computer vision (Face recognition and age/mood classification is ~mandatory)
 - Art/drawing
 - Music
 - Games
