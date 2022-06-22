@@ -33,12 +33,18 @@ https://youtu.be/djsEKYuiRFE
 - Explore what a neural network sees: https://experiments.withgoogle.com/what-neural-nets-see
 
 ### Art/drawing
+- Turn picture into artline:
+https://github.com/vijishmadhavan/ArtLine
+- Demos in colab: (style transfer and Nemo voice Swap)
+https://colab.research.google.com/?utm_source=scs-index#scrollTo=P-H6Lw1vyNNd The idea for us is to do style transfer where one of the pictures is a photo taken from a webcam. A sort of "AI photo booth"
 - Quickdraw: 
 https://quickdraw.withgoogle.com/
 - Draw together with a neural network:
-https://magenta.tensorflow.org/assets/sketch_rnn_demo/index.html
+https://magenta.tensorflow.org/assets/sketch_rnn_demo/index.html and https://github.com/magenta/magenta-js/tree/master/sketch
 - Dale 1 / 2.
 https://openai.com/dall-e-2/
+- exchange face with a celebrity (needs GPUs, probably too much GPU power for us)
+https://github.com/iperov/DeepFaceLive
 
 ### Music
 - Music generation
