@@ -25,7 +25,7 @@ The content on the four interactive stations should be app-based, where the user
 The following list presents suggestions to hands-on demonstrations that can be displayed on each of the four interactive consoles. These apps are published under open source license, meaning that it is allowed to use them for commercial use in the Science Center. 
 
 ### Computer Vision
-- Face recognition from camera with classification of age, gender and mood.
+- Face recognition from camera with classification of age, gender and mood: https://github.com/SFI-Visual-Intelligence/MLdemos_with_webcam
 - Avatarify:  
 https://github.com/alievk/avatarify-desktop
 - GAN celebrity interpolation: 
