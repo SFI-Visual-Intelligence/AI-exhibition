@@ -4,7 +4,7 @@
 ---
 ## What is this?
 
-This program use two different premade machine learning algorithms to first detect a face and display the name of the person, then another algorithm will analyze each face it sees and display a predicted *age*, *gender* and *emotion* to this face.
+This program uses two different premade machine learning algorithms to first detect a face and display the name of the person, then another algorithm will analyze each face it sees and display a predicted *age*, *gender* and *emotion* to this face.
 
 ## Setup
 
@@ -17,14 +17,14 @@ $ pip install -r requirements.txt
 ## Usage
 
 1. **Recording a face.**
-    First off, the face recognition model will need to take some images of each person and quickly train it´s weights for each registered person. This can be done from the command line using the command:
+    First off, the face recognition model will need to take some images of each person and quickly train its weights for each registered person. This can be done from the command line using the command:
     ```bash
     $ python record_user_face.py
     ```
 
     This will display a video feed from the built-in camera, and once a face is detected the script will capture 90 images of any face in the frame. **It is important there is only one person infront of the camera each time the script has been executed.** To record multiple users, execute the script again.
 2. **Training the model.**
-    whenever a new user is recorded, for the algorithm to be able to detect them and correctly classify their names, the algorithm needs to be trained again. Use
+    Whenever a new user is recorded, for the algorithm to be able to detect them and correctly classify their names, the algorithm needs to be trained again. It is possible to record multiple users faces before training the model. Use command
 
     ```bash
     $ python train_face_recognition.py
