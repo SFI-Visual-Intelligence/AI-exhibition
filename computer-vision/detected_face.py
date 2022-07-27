@@ -80,7 +80,7 @@ def rectangle_comparison(rectangle_list1, rectangle_list2):
         choice = np.argmin(distances)
 
         # Store a tuple of the combination of indices
-        matches.append((i, indexes[choice]))
+        matches.append((indexes[choice]))
 
         # Remove previous choice
         indexes = np.delete(indexes, choice)
@@ -122,23 +122,17 @@ def face_analyzing(img, face_pos):
     shorten the code for rectangle_comparison as some can be done within class methods.
     """
 
-    #finds which data correponds with which face
+    # Finds what data correponds to which face
     matching_faces = rectangle_comparison(face_pos, face_analyed_pos)
 
-    estimated_faces = []    
-    for face in estimation: 
-        estimated_faces.append(face)
-    
-    #reorders faces to correspond
-    ordered_faces = []
-    for (i,j) in matching_faces:
-        ordered_faces.append(estimated_faces[j])
+    for haarcascade_id, (deepface_id, face) in enumerate(zip(matching_faces, faces)):
+        face.haarcascade_id = haarcascade_id
+        face.deepface_id = deepface_id
 
-    print(ordered_faces, 'Ordered faces')
-    
-    return estimation, ordered_faces
+    ### Uncomment for DEBUGGING
+    # for face in faces: print(face)
 
-
+    return faces
 
 class AnalyzedFace:
     """
@@ -147,11 +141,38 @@ class AnalyzedFace:
 
     def __init__(self, face):
         self.face = face
-        print(self.face)
         self._x, self._y, self._w, self._h = map(int, self.face["region"].values())
         self._gender = self.face["gender"]
         self._emotion = self.face["dominant_emotion"]
+        self._age = self.face["age"]
+        self._name = None
         self._center = self.get_center(self.x, self.y, self.w, self.h)
+        self._haarcascade_id = None
+        self._deepface_id = None
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, val):
+        self._name = val
+
+    @property
+    def haarcascade_id(self):
+        return self._haarcascade_id
+
+    @property
+    def deepface_id(self):
+        return self._deepface_id
+
+    @haarcascade_id.setter
+    def haarcascade_id(self, h_id):
+        self._haarcascade_id = h_id
+
+    @deepface_id.setter
+    def deepface_id(self, d_id):
+        self._deepface_id = d_id
 
     @property
     def rect(self):
@@ -185,12 +206,19 @@ class AnalyzedFace:
     def emotion(self):
         return self._emotion
 
+    @property
+    def age(self):
+        return self._age
+
     @staticmethod
     def get_center(x, y, w, h):
         return np.array([x, y]) + np.array([w // 2, h // 2])
 
     def __str__(self):
-        return f"x={self.x}, y={self.y}, w={self.w}, h={self.h}, center={self.center}, gender={self.gender}, emotion={self.emotion}"
+        return f"x={self.x}, y={self.y}, w={self.w}, h={self.h}, center={self.center}, gender={self.gender}, emotion={self.emotion}, age={self.age}, h_id={self.haarcascade_id}, d_id={self.deepface_id}"
+
+    def __repr__(self):
+        return f"x={self.x}, y={self.y}, w={self.w}, h={self.h}, center={self.center}, gender={self.gender}, emotion={self.emotion}, age={self.age}, h_id={self.haarcascade_id}, d_id={self.deepface_id}"
     
 
 if __name__ == '__main__':
