@@ -39,31 +39,34 @@ while True:
     faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
    
 
+    # Only allow the deepface algorithm to run when enough frames have gone due to slow performance of deepface analyze.
     count1 +=1
     if count1 > face_analyzing_time:
         state_estimation, ordered_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion and orders after faces found in line 39
         count1 = 0
     
-    
+    # Iterate over each face found from first model.
     for index, (x,y,w,h) in enumerate(faces):
         
+        # Draw rectangle from haarcascade face detection result.
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
-        person_id, confidence = recognizer.predict(gray[y:y+h,x:x+w])
-        # Check if confidence is less them 100 ==> "0" is perfect match 
-        if ((100 - confidence) > confidence_threshold):
-            person_name = person_id2name[str(person_id)]
-            confidence = "  {0}%".format(round(100 - confidence))
-            if count1 == 0:
-                if len(ordered_faces) < 1:  #skips if no faces found by retina
-                    pass
-                else:   #updates estimates about person
-                    people[person_name] = [state_estimation[ordered_faces[index]]['age'], state_estimation[ordered_faces[index]]['gender'],state_estimation[ordered_faces[index]]['dominant_emotion']]
-            
-        else:
-            person_name = undefined_person
-            confidence = "  {0}%".format(round(100 - confidence))
 
+        # Predict what person is in what frame
+        person_id, confidence = recognizer.predict(gray[y:y+h,x:x+w])
+
+        person_name = undefined_person
+
+        # Check if confidence is less than 100 ==> "0" is perfect match 
+        if ((100 - confidence) > confidence_threshold):
+
+            person_name = person_id2name[str(person_id)]
+            
+            # skip if no faces found by retina
+            if len(ordered_faces) > 1 and count1 == 0:
+                people[person_name] = [state_estimation[ordered_faces[index]]['age'], state_estimation[ordered_faces[index]]['gender'],state_estimation[ordered_faces[index]]['dominant_emotion']]
         
+        confidence = "  {0}%".format(round(100 - confidence))
+
         #Text display
         cv2.putText(img, 'Age: '+ str(people[person_name][0]), (x+w,y+15), font, 0.5, (0,0,0), 2)
         cv2.putText(img, 'Gender: '+ str(people[person_name][1]), (x+w,y+30), font, 0.5, (0,0,0), 2)
