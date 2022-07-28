@@ -16,13 +16,14 @@ import pygame as pg
 
 from settings import *
 
+vec = pg.math.Vector2
 
 class Car:
 
     def __init__(self):
         # Load Car Sprite and Rotate
-        self.sprite = pygame.image.load('car.png').convert() # Convert Speeds Up A Lot
-        self.sprite = pygame.transform.scale(self.sprite, (CAR_SIZE_X, CAR_SIZE_Y))
+        self.sprite = pg.image.load('car.png').convert_alpha() # Convert Speeds Up A Lot
+        self.sprite = pg.transform.scale(self.sprite, (CAR_SIZE_X, CAR_SIZE_Y))
         self.rotated_sprite = self.sprite 
 
         # self.position = [690, 740] # Starting Position
@@ -50,8 +51,8 @@ class Car:
         # Optionally Draw All Sensors / Radars
         for radar in self.radars:
             position = radar[0]
-            pygame.draw.line(screen, (0, 255, 0), self.center, position, 1)
-            pygame.draw.circle(screen, (0, 255, 0), position, 5)
+            pg.draw.line(screen, (0, 255, 0), self.center, position, 1)
+            pg.draw.circle(screen, (0, 255, 0), position, 5)
 
     def check_collision(self, game_map):
         self.alive = True
@@ -141,7 +142,7 @@ class Car:
     def rotate_center(self, image, angle):
         # Rotate The Rectangle
         rectangle = image.get_rect()
-        rotated_image = pygame.transform.rotate(image, angle)
+        rotated_image = pg.transform.rotate(image, angle)
         rotated_rectangle = rectangle.copy()
         rotated_rectangle.center = rotated_image.get_rect().center
         rotated_image = rotated_image.subsurface(rotated_rectangle).copy()
@@ -149,12 +150,146 @@ class Car:
 
 class Simulation:
     def __init__(self):
-        self.nets = []
-        self.cars = []
 
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT), pg.FULLSCREEN)
 
+        self.current_generation = 0
+
+    def load(self, map):
+        self.generation_font = pg.font.SysFont("Arial", 30)
+        self.alive_font = pg.font.SysFont("Arial", 20)
+        game_map = pg.image.load(map).convert_alpha()
+        return game_map
+
+
+    def init_model(self, genomes, config):
+        nets = []
+        cars = []
+
+        for i, g in genomes:
+            net = neat.nn.FeedForwardNetwork.create(g, config)
+            nets.append(net)
+            g.fitness = 0
+
+            cars.append(Car())
+
+        return nets, cars
+
     def run(self, genomes, config):
         """ Make the game able to play in same window """
-        pass
+        
+        nets, cars = self.init_model(genomes, config)
+
+
+        clock = pg.time.Clock()
+        self.t = 0
+        game_map = self.load("map2.png")
+
+        while True:
+
+            # Handle events
+            self.events()
+
+            self.still_alive = self.update(nets, cars, genomes, game_map)
+
+            if self.still_alive == 0 or self.t > 15:
+                break
+            
+            self.draw(game_map, cars)
+            self.display_text()
+
+            pg.display.flip()
+            self.t += clock.tick(60) / 1000
+
+        self.current_generation += 1
+
+    def draw(self, map, cars):
+        self.screen.blit(map, (0,0))
+
+        for car in cars:
+            if car.is_alive():
+                car.draw(self.screen)
+
+
+    def display_text(self):
+        text = self.generation_font.render(f"Generation: {self.current_generation}", True, (0,0,0))
+        text_rect = text.get_rect(center = vec(900, 450))
+        self.screen.blit(text, text_rect)
+
+        text = self.alive_font.render(f"Still Alive: {self.still_alive}", True, (0,0,0))
+        text_rect = text.get_rect(center = vec(900, 490))
+        self.screen.blit(text, text_rect)
+
+
+    def update(self, nets, cars, genomes, game_map):
+        
+        # For each car get its action
+        for i, car in enumerate(cars):
+            output = nets[i].activate(car.get_data())
+            choice = output.index(max(output))
+
+            # Left
+            if choice == 0:
+                car.angle += 10
+
+            # Right
+            elif choice == 1:
+                car.angle -= 10
+
+            # Slow Down
+            elif choice == 2:
+                if car.speed - 2 >= 12:
+                    car.speed -= 2
+
+            # Speed up
+            else:
+                car.speed += 2
+
+        # Check if car is still alive
+        # if yes, increase fitness, break loop if not
+
+        still_alive = 0
+        for i, car in enumerate(cars):
+            if car.is_alive():
+                still_alive += 1
+                car.update(game_map)
+                genomes[i][1].fitness += car.get_reward()
+
+        return still_alive
+        
+
+    def events(self):
+        # Exit on Quit Event
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                sys.exit(0)
+
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    sys.exit(0)
+
+if __name__ == "__main__":
+
+    # Load Config
+    path = os.path.dirname(__file__)
+    config_path = os.path.join(path, "config.txt")
+    config = neat.config.Config(
+        neat.DefaultGenome,
+        neat.DefaultReproduction,
+        neat.DefaultSpeciesSet,
+        neat.DefaultStagnation,
+        config_path
+    )
+
+    # Create Population and add Reporters
+    population = neat.Population(config)
+    population.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    population.add_reporter(stats)
+
+    # initialize simulation
+    sim = Simulation()
+
+    # Run simulation for a maximum of 1000 generations
+    population.run(sim.run, 30)
