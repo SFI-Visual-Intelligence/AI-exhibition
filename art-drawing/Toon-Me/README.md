@@ -36,8 +36,8 @@ Comic style images:
 
 
 **Hardware requirements**
-<p>The program was put together an run on a laptop.<p>
-<p>The program can be run on a computer with the minimum spesifications:<br>
+<p>The program was put together an run on a laptop.<br>
+The program can be run on a computer with the minimum spesifications:<br>
 Processor: Intel Core i3-5005U CPU<br>
 Ram: 8.00GB<br>
 Platform: Windows x64<br>
