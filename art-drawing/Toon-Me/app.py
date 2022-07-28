@@ -15,22 +15,22 @@ import cv2
 import matplotlib.pyplot as plt
 import os
 
-# cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
+cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
 
-# cap_pic = True
+cap_pic = True
 
-# while cap_pic == True: #camerafeed
-#     ret,frame = cap.read() 
-#     cv2.imshow('Press spacebar to capture image',frame) #display the video image
-#     k = cv2.waitKey(33)
-#     if k == 32: #capture image on pressing spacebar 
-#         cv2.imwrite('original_img.jpg',frame)   #save frame
-#         cap.release()
-#         cv2.destroyAllWindows()
-#         cap_pic = False
-#         break
-#     else:
-#         pass
+while cap_pic == True: #camerafeed
+    ret,frame = cap.read() 
+    cv2.imshow('Press spacebar to capture image',frame) #display the video image
+    k = cv2.waitKey(33)
+    if k == 32: #capture image on pressing spacebar 
+        cv2.imwrite('original_img.jpg',frame)   #save frame
+        cap.release()
+        cv2.destroyAllWindows()
+        cap_pic = False
+        break
+    else:
+        pass
 
 
 
@@ -179,13 +179,13 @@ awnser = input('Enter \'color\' for colored or \'grey\' for black and white: ')
 if awnser == 'color':
     print('Please wait a moment while the image is being made')
     run_style(img, color=True) 
-    # os.remove('original_img.jpg')
+    os.remove('original_img.jpg')
     os.remove('test.jpg') #removes images used in between generating comicstyle images
 
 if awnser == 'grey':
     print('Please wait a moment while the image is being made')
     run_style(img) 
-    # os.remove('original_img.jpg')
+    os.remove('original_img.jpg')
     os.remove('test.jpg') #removes images used in between generating comicstyle images
 
 if awnser != 'color' and awnser != 'grey':
