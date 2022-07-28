@@ -15,22 +15,22 @@ import cv2
 import matplotlib.pyplot as plt
 import os
 
-cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
+# cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
 
-cap_pic = True
+# cap_pic = True
 
-while cap_pic == True: #camerafeed
-    ret,frame = cap.read() 
-    cv2.imshow('Press spacebar to capture image',frame) #display the video image
-    k = cv2.waitKey(33)
-    if k == 32: #capture image on pressing spacebar 
-        cv2.imwrite('original_img.jpg',frame)   #save frame
-        cap.release()
-        cv2.destroyAllWindows()
-        cap_pic = False
-        break
-    else:
-        pass
+# while cap_pic == True: #camerafeed
+#     ret,frame = cap.read() 
+#     cv2.imshow('Press spacebar to capture image',frame) #display the video image
+#     k = cv2.waitKey(33)
+#     if k == 32: #capture image on pressing spacebar 
+#         cv2.imwrite('original_img.jpg',frame)   #save frame
+#         cap.release()
+#         cv2.destroyAllWindows()
+#         cap_pic = False
+#         break
+#     else:
+#         pass
 
 
 
@@ -107,7 +107,7 @@ path = '.'
 
 img = PIL.Image.open('original_img.jpg').convert("RGB") #get captured image
 
-im_new = add_margin(img, 150, 150, 150, 150, (255, 255, 255)) 
+im_new = add_margin(img, 150, 150, 150, 150, (255, 255, 255)) #add margin to image
 
 im_new.save("test.jpg", quality=95)     #save version with margin
 
@@ -117,7 +117,8 @@ img = open_image("test.jpg")
 
 def comicstyle_blackwhite(img):
     """Function generates comic style image
-    Input is image
+    Input:
+        Image captured or loaded
     returns:
         comic style black and white image 
     """
@@ -131,22 +132,27 @@ def comicstyle_blackwhite(img):
 
 def comicstyle_color(img_taken):
     """Function generates comic style colored image
-    Input is image
+    Input:
+        Image captured or loaded
     returns:
         comic style colored image 
     """
-    comicstyle_blackwhite(img_taken)    #load grey comicstyle image
+    comicstyle_blackwhite(img_taken)    #generate grey comicstyle image
     blackwhite_img = open_image('comic_style_blackwhite.jpg') 
     
-    learn_c = load_learner(path, 'Toon-Me_820.pkl') #adds color to comicstyle image
-    p, img_hr, b = learn_c.predict(blackwhite_img)   #replace img_taken with blackwhite_img????
-    # plt.imshow(img_hr.permute(1, 2, 0), interpolation='nearest')
-    # plt.show()
+    learn_c = load_learner(path, 'Toon-Me_820.pkl') #load color model
+    p, img_hr, b = learn_c.predict(blackwhite_img)   #adds color to comicstyle image
+    
     x = np.minimum(np.maximum(image2np(img_hr.data*255), 0), 255).astype(np.uint8) 
     PIL.Image.fromarray(np.asarray(x)).save("comic_style_color.jpg", quality=95) #save image
 
 def run_style(image_taken, color=False):
-
+    """Function runs the algorithm and displays image
+    Input: 
+        Image captured or loaded
+    Returns:
+        Nothing
+    """
     if color == False:
         comicstyle_blackwhite(image_taken)
         display_img = cv2.imread('comic_style_blackwhite.jpg')
@@ -168,8 +174,22 @@ def run_style(image_taken, color=False):
             break
 
 
-run_style(img, color=True) 
+print('Do you want colored image?')
+awnser = input('Enter \'color\' for colored or \'grey\' for black and white: ')
+if awnser == 'color':
+    print('Please wait a moment while the image is being made')
+    run_style(img, color=True) 
+    # os.remove('original_img.jpg')
+    os.remove('test.jpg') #removes images used in between generating comicstyle images
 
-#removes images used in between generating comicstyle images
-os.remove('original_img.jpg')
-os.remove('test.jpg')
+if awnser == 'grey':
+    print('Please wait a moment while the image is being made')
+    run_style(img) 
+    # os.remove('original_img.jpg')
+    os.remove('test.jpg') #removes images used in between generating comicstyle images
+
+if awnser != 'color' and awnser != 'grey':
+    print('You did not enter a correct option!')
+
+
+
