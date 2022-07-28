@@ -38,8 +38,8 @@ Comic style images:
 **Hardware requirements**
 The program was put together an run on a laptop.
 The program can be run on a computer with the minimum spesifications:
-Processor: Intel Core i3-5005U CPU
-Ram: 8.00GB
-Platform: Windows x64
-Grafic card: None
-Disc space: 800 MB
+*Processor: Intel Core i3-5005U CPU
+*Ram: 8.00GB
+*Platform: Windows x64
+*Grafic card: None
+*Disc space: 800 MB
