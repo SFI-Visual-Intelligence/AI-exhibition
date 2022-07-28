@@ -41,5 +41,5 @@ The program can be run on a computer with the minimum spesifications:<br>
 Processor: Intel Core i3-5005U CPU<br>
 Ram: 8.00GB<br>
 Platform: Windows x64<br>
-Grafic card: None<br>
+Graphic card: None<br>
 Disc space: 800 MB<p>
