@@ -10,6 +10,7 @@ import math
 import random
 import sys
 import os
+import pickle
 
 import neat
 import pygame as pg
@@ -167,10 +168,17 @@ class Simulation:
         nets = []
         cars = []
 
-        for i, g in genomes:
-            net = neat.nn.FeedForwardNetwork.create(g, config)
+        if isinstance(genomes, list):
+            for i, g in genomes:
+                net = neat.nn.FeedForwardNetwork.create(g, config)
+                nets.append(net)
+                g.fitness = 0
+
+                cars.append(Car())
+        else:
+            net = neat.nn.FeedForwardNetwork.create(genomes, config)
             nets.append(net)
-            g.fitness = 0
+            genomes.fitness = 0
 
             cars.append(Car())
 
@@ -180,7 +188,6 @@ class Simulation:
         """ Make the game able to play in same window """
         
         nets, cars = self.init_model(genomes, config)
-
 
         clock = pg.time.Clock()
         self.t = 0
@@ -269,27 +276,95 @@ class Simulation:
                 if event.key == pg.K_ESCAPE:
                     sys.exit(0)
 
+class NeatPlayer:
+    def __init__(self, config_path):
+
+        # set config path
+        self.config_path = config_path
+
+        # make config
+        self.config = neat.config.Config(
+            neat.DefaultGenome,
+            neat.DefaultReproduction,
+            neat.DefaultSpeciesSet,
+            neat.DefaultStagnation,
+            config_path
+        )
+        
+        # Initialize simulation
+        self.sim = Simulation()
+
+    def train_ai(self, play_until_generation:int=10) -> None:
+        """
+        Method to start the training of the AI. The training will last until play_until_generation.
+
+        Args
+        ----
+        play_until_generation: int
+            Number of generations before training is complete.
+        """
+
+        # Create Population and add Reporters
+        population = neat.Population(self.config)
+        population.add_reporter(neat.StdOutReporter(True))
+        stats = neat.StatisticsReporter()
+        population.add_reporter(stats)
+
+
+        best_genome = population.run(self.sim.run, play_until_generation)
+
+        return best_genome
+
+    def play(self, ai):
+        """
+        Method that
+        """
+
+        self.sim.run(ai, self.config)
+
+    @staticmethod
+    def save_genome(genome, filepath):
+        with open(filepath, "wb") as f:
+            pickle.dump(genome, f)
+
+    @staticmethod
+    def load_genome(filepath):
+        """
+        Load a locally saved genome.
+
+        Args
+        ----
+        filepath : path-like | str
+            path to file containing genome bytes.
+        
+        Returns
+        -------
+        genome : 
+        """
+        with open(filepath, "rb") as f:
+            genome = pickle.load(filepath)
+        
+        genome = [(1, genome)]
+        return genome
+
+
 if __name__ == "__main__":
 
     # Load Config
     path = os.path.dirname(__file__)
     config_path = os.path.join(path, "config.txt")
-    config = neat.config.Config(
-        neat.DefaultGenome,
-        neat.DefaultReproduction,
-        neat.DefaultSpeciesSet,
-        neat.DefaultStagnation,
-        config_path
-    )
 
-    # Create Population and add Reporters
-    population = neat.Population(config)
-    population.add_reporter(neat.StdOutReporter(True))
-    stats = neat.StatisticsReporter()
-    population.add_reporter(stats)
+    game = NeatPlayer(config_path)
+    ai = game.train_ai(7)
 
-    # initialize simulation
-    sim = Simulation()
+    modelname = "neat-trained-model.pkl"
 
-    # Run simulation for a maximum of 1000 generations
-    population.run(sim.run, 30)
+    game.save_genome(ai, modelname)
+
+    ai = game.load_genome(modelname)
+
+    game.play(ai)
+
+"""
+https://stackoverflow.com/questions/61365668/applying-saved-neat-python-genome-to-test-environment-after-training
+"""
