@@ -1,3 +1,7 @@
+"""
+TODO: When the deepface algorithm finds a face but the haarcascade does not, 
+"""
+
 import cv2
 import numpy as np
 import os
@@ -68,7 +72,14 @@ while True:
 
             # Match deepface and haarcascade results together to set the correct attributes to the
             # correct name.
-            current_face = get_face_from_index(analyzed_faces, person_id)
+            try:
+                current_face = get_face_from_index(analyzed_faces, person_id)
+
+                if current_face is None:
+                    raise ValueError("Indexes were not matched -> implement the use of the previous result.")
+            except ValueError as e:
+                print(e)
+                exit(1)
             people[person_name] = [current_face.age, current_face.gender, current_face.emotion]
 
         #Text display
