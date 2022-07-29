@@ -18,8 +18,8 @@ recognizer.read(detection.model_file)
 person_id2name = detection.read_person_names(detection.person_names_file)
 undefined_person = 'Unknown'
 confidence_threshold = 20
-frame = 1
 face_analyzing_time = 50
+frame = face_analyzing_time + 1
 people = dict()
 for names in person_id2name.values():
     people[names] = ['unknown', 'unknown', 'unknown']
@@ -80,6 +80,7 @@ while True:
             except ValueError as e:
                 print(e)
                 exit(1)
+                
             people[person_name] = [current_face.age, current_face.gender, current_face.emotion]
 
         #Text display
