@@ -2,3 +2,4 @@
 */*/*venv/
 art-drawing/Toon-Me/*.pkl
 __pycache__/
+computer-vision/dataset/*

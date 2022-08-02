@@ -18,15 +18,17 @@ recognizer.read(detection.model_file)
 person_id2name = detection.read_person_names(detection.person_names_file)
 undefined_person = 'Unknown'
 confidence_threshold = 20
-face_analyzing_time = 50
+face_analyzing_time = 100
 frame = face_analyzing_time + 1
 people = dict()
+
 for names in person_id2name.values():
-    people[names] = ['unknown', 'unknown', 'unknown']
+    people[names] = ['calculating...', 'calculating...', 'calculating...']
 people[undefined_person] = ['unknown', 'unknown', 'unknown']
 
-def get_face_from_index(faces, ind):
+def get_face_from_index(faces, ind):    #match indexes 
     for face in faces:
+        # print(face.haarcascade_id, ind, 'get faces from index')
         if face.haarcascade_id == ind:
             return face
 
@@ -43,9 +45,7 @@ while True:
    
     # Only allow the deepface algorithm to run when enough frames have gone due to slow performance of deepface analyze.
     frame += 1
-    if frame > face_analyzing_time:
-        analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion and orders after faces found in line 39
-        frame = 0
+    person_ids = []
 
     # Iterate over each face found from first model.
     for index, (x,y,w,h) in enumerate(faces):
@@ -65,31 +65,37 @@ while True:
 
         # Find name of person given id
         person_name = person_id2name[str(person_id)]
-            
+        person_ids.append(person_id)
+        confidence_text = "  {0}%".format(round(100 - confidence))
+
+        #text display
+        cv2.putText(img, str(person_name), (x+5,y-5), font, 1, (255,255,255), 2)
+        cv2.putText(img, str(confidence_text), (x+5,y+h-5), font, 1, (255,255,0), 2)  
         # If deepface finds more than 0 faces, we match up the indices of deepface´s retinaface and
         # the haarcascade results.
-        if len(analyzed_faces) > 0 and frame == 0:
+    if frame > face_analyzing_time and len(person_ids) > 0:
+        analyzed_faces = detected_face.face_analyzing(img, faces, person_ids) #estimating age, gender and emotion and orders after faces found in line 39
+        frame = 0 
+    for face_ind, face_id in enumerate(person_ids):
+        person_name = person_id2name[str(face_id)] 
+        if len(analyzed_faces) > 0  and len(person_ids) > 0 and frame == 0:
 
             # Match deepface and haarcascade results together to set the correct attributes to the
             # correct name.
-            try:
-                current_face = get_face_from_index(analyzed_faces, person_id)
-
-                if current_face is None:
-                    raise ValueError("Indexes were not matched -> implement the use of the previous result.")
-            except ValueError as e:
-                print(e)
-                exit(1)
+            current_face = get_face_from_index(analyzed_faces, face_id)
                 
-            people[person_name] = [current_face.age, current_face.gender, current_face.emotion]
+            if current_face is None:    #skip if face isn't found
+                pass
+            else:
+                print('Matched face '+str(face_id), 'to '+ person_name)
+                print('Found '+ person_name, '- Updating their info...')
+                people[person_name] = [current_face.age, current_face.gender, current_face.emotion] #update estimation information
 
+        (x,y,w,h) = faces[face_ind]
         #Text display
-        confidence_text = "  {0}%".format(round(100 - confidence))
         cv2.putText(img, 'Age: '+ str(people[person_name][0]), (x+w,y+15), font, 0.5, (0,0,0), 2)
         cv2.putText(img, 'Gender: '+ str(people[person_name][1]), (x+w,y+30), font, 0.5, (0,0,0), 2)
         cv2.putText(img, 'Emotion: '+ str(people[person_name][2]), (x+w,y+45), font, 0.5, (0,0, 0), 2)
-        cv2.putText(img, str(person_name), (x+5,y-5), font, 1, (255,255,255), 2)
-        cv2.putText(img, str(confidence_text), (x+5,y+h-5), font, 1, (255,255,0), 2)  
     cv2.imshow('camera',img)
     k = cv2.waitKey(5) & 0xff # Press 'ESC' for exiting video
     if k == 27:
