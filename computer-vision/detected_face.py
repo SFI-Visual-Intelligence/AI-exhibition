@@ -34,7 +34,7 @@ def get_center(x, y, w, h):
 
     return vec(x, y) + vec(w // 2, h // 2)
 
-def rectangle_comparison(rectangle_list1, rectangle_list2):
+def rectangle_comparison(rectangle_list1, rectangle_list2, person_ids):
     """Function that compares two lists of rectangles.
 
     Lists are ordered as rectangle_list1: [(x1,y1,w1,h1), (x2,y2,w2,h2)]
@@ -55,6 +55,7 @@ def rectangle_comparison(rectangle_list1, rectangle_list2):
     matches = []
 
     indexes = np.arange(len(rectangle_list2))
+    indexes1 = np.arange(len(rectangle_list1))
 
     # iterating over coordinates of first list of rectangles
     for i, (x1,y1,w1,h1) in enumerate(rectangle_list1):
@@ -78,20 +79,23 @@ def rectangle_comparison(rectangle_list1, rectangle_list2):
 
         # Choose the index of the closest rectangle
         choice = np.argmin(distances)
+        # print(person_ids)
 
         # Store a tuple of the combination of indices
-        matches.append((indexes[choice]))
+        matches.append((person_ids[i], choice))
 
         # Remove previous choice
         indexes = np.delete(indexes, choice)
+        indexes1 = np.delete(indexes1, 0)
+        # person_ids = np.delete(person_ids, i)
 
-        # Iterate till rectangle_list2 is exhausted.
-        if len(indexes) == 0:
+        # Iterate till rectangle_list2 or rectangle_list1 is exhausted.
+        if len(indexes) == 0 or len(indexes1) == 0:
             break
     
     return matches 
 
-def face_analyzing(img, face_pos):
+def face_analyzing(img, face_pos, person_ids):
     """Function that estimates age, gender and emotion of face. Additionally orders data 
     following other face recognition.
 
@@ -123,11 +127,17 @@ def face_analyzing(img, face_pos):
     """
 
     # Finds what data correponds to which face
-    matching_faces = rectangle_comparison(face_pos, face_analyed_pos)
+    matching_faces = rectangle_comparison(face_pos, face_analyed_pos, person_ids)
+    # print(matching_faces)
 
-    for haarcascade_id, (deepface_id, face) in enumerate(zip(matching_faces, faces)):
-        face.haarcascade_id = haarcascade_id
-        face.deepface_id = deepface_id
+    for match, face in enumerate(faces):
+        
+        if match == len(matching_faces):
+            pass
+        else:
+            
+            face.haarcascade_id = matching_faces[match][0]
+            face.deepface_id = matching_faces[match][1]
 
     ### Uncomment for DEBUGGING
     # for face in faces: print(face)

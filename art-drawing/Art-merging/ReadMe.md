@@ -40,3 +40,8 @@ Ram: 8.00GB<br>
 Platform: Windows x64<br>
 Graphic card: None<br>
 Disc space: 800 MB<p>
+
+
+
+Original code:
+https://github.com/tensorflow/docs/blob/master/site/en/tutorials/generative/style_transfer.ipynb
