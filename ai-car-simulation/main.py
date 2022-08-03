@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Train and race agains Neat AI!
 
@@ -10,14 +12,13 @@ import math
 import random
 import sys
 import os
-import pickle
 
 import neat
 import pygame as pg
+from argparse import ArgumentParser
 
 from settings import *
-
-vec = pg.math.Vector2
+from db_handler import DataBaseHandler
 
 class Car:
 
@@ -163,28 +164,20 @@ class Simulation:
         game_map = pg.image.load(map).convert_alpha()
         return game_map
 
-
     def init_model(self, genomes, config):
         nets = []
         cars = []
 
-        if isinstance(genomes, list):
-            for i, g in genomes:
-                net = neat.nn.FeedForwardNetwork.create(g, config)
-                nets.append(net)
-                g.fitness = 0
-
-                cars.append(Car())
-        else:
-            net = neat.nn.FeedForwardNetwork.create(genomes, config)
+        for i, g in genomes:
+            net = neat.nn.FeedForwardNetwork.create(g, config)
             nets.append(net)
-            genomes.fitness = 0
+            g.fitness = 0
 
             cars.append(Car())
 
         return nets, cars
 
-    def run(self, genomes, config):
+    def run(self, genomes, config, mode="train"):
         """ Make the game able to play in same window """
         
         nets, cars = self.init_model(genomes, config)
@@ -265,7 +258,6 @@ class Simulation:
 
         return still_alive
         
-
     def events(self):
         # Exit on Quit Event
         for event in pg.event.get():
@@ -281,6 +273,8 @@ class NeatPlayer:
 
         # set config path
         self.config_path = config_path
+
+        self.checkpoint_dir = os.path.join(os.path.dirname(__file__), "checkpoints")
 
         # make config
         self.config = neat.config.Config(
@@ -310,7 +304,7 @@ class NeatPlayer:
         stats = neat.StatisticsReporter()
         population.add_reporter(stats)
 
-
+        # runs the population
         best_genome = population.run(self.sim.run, play_until_generation)
 
         return best_genome
@@ -320,50 +314,72 @@ class NeatPlayer:
         Method that
         """
 
-        self.sim.run(ai, self.config)
-
-    @staticmethod
-    def save_genome(genome, filepath):
-        with open(filepath, "wb") as f:
-            pickle.dump(genome, f)
-
-    @staticmethod
-    def load_genome(filepath):
-        """
-        Load a locally saved genome.
-
-        Args
-        ----
-        filepath : path-like | str
-            path to file containing genome bytes.
-        
-        Returns
-        -------
-        genome : 
-        """
-        with open(filepath, "rb") as f:
-            genome = pickle.load(filepath)
-        
-        genome = [(1, genome)]
-        return genome
-
+        self.sim.run(ai, self.config, mode="play")
 
 if __name__ == "__main__":
 
-    # Load Config
+    vec = pg.math.Vector2
+
+    # # Load Config
     path = os.path.dirname(__file__)
     config_path = os.path.join(path, "config.txt")
 
+    # Argument parser for cli usage (recommended).
+    parser = ArgumentParser(prog="AI-NEAT-racing", description="Train an AI to race around maps")
+    parser.add_argument("name", type=str, help="Name of the trainer.")
+    parser.add_argument("-m", "--map", type=int, choices=[1, 2, 3, 4, 5], help="Select which map by integer (1 - 5) what map to use.")
+    parser.add_argument("-t", "--train", action="store_true", help="Starts training a model to the user with specified number of generations using flag: --generations.")
+    parser.add_argument("--generations", type=int, nargs="?", const=10, help="Number of generations model will train to.")
+    parser.add_argument("-p", "--play", nargs="+", help="Who to play against")
+    parser.add_argument("--show_opponents", action="store_true", help="Shows other possible opponents to play agains.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose mode")
+    args = parser.parse_args()
+
+    if args.verbose:
+        print(f"[debug] name: {args.name}, map choice: {args.map}, train: {args.train}, opponent: {args.play}")
+        exit()
+    # Initialize database
+    db = DataBaseHandler()
+
+    if args.show_opponents:
+        
+        # Show opponents
+        users = db.get_users()
+
+        if len(users) == 0:
+            print("[info]\tNo registered users.")
+        else:
+            print("[info]\tShowing registered users:")
+            for user in users: print(f"\t{user}")
+
+        exit()
+    
+    # Initialize game
     game = NeatPlayer(config_path)
-    ai = game.train_ai(7)
+    
+    if args.train:
 
-    modelname = "neat-trained-model.pkl"
+        # Train ai
+        ai = game.train_ai(args.generations)
 
-    game.save_genome(ai, modelname)
+        # Add model to user database folder.
+        db.entry(args.name, ai)
 
-    ai = game.load_genome(modelname)
+    elif args.play:
 
-    game.play(ai)
+        # Load model of player
+        ownai = db.get_model(args.name)
+
+        # load opponents ai
+        opponents_ai = [db.get_model(opponent) for opponent in args.play]
+
+        # Add all ai´s to list
+        ai = [(1, ownai)]
+
+        for opponent_ai in opponents_ai:
+            ai.append((2, opponent_ai))
+
+        game.play(ai)
 
 """
 https://stackoverflow.com/questions/61365668/applying-saved-neat-python-genome-to-test-environment-after-training
