@@ -94,7 +94,7 @@ class DataBaseHandler:
         except FileExistsError as e:
             print(f"[warning]\t{userpath} already exist.")
 
-    def _add_model_to_user(self, user, model):
+    def _add_user_model(self, user):
         """
         Add a model entry to a user directory.
 
@@ -105,13 +105,31 @@ class DataBaseHandler:
         model: obj
             Object to be stored in database.
         """
-        user_model = join(self.path, user, "model.pkl")
+        user_model = join(self.path, user.name, "model.pkl")
 
         try:
             with open(user_model, "wb") as f:
-                pickle.dump(model, f)
+                pickle.dump(user.model, f)
                 print(f"[info]\t{user_model} created.")
 
+        except FileExistsError as e:
+            raise e
+
+    def _add_user_texture(self, owner):
+        """
+        Store owners color
+
+        Args
+        ----
+        owner: RacingTrainer obj
+            Object with name and texture attribute.
+        """
+
+        user_dir = join(self.path, owner.name, "texture.txt")
+
+        try:
+            with open(user_dir, "w") as f:
+                f.write(owner.texture)
         except FileExistsError as e:
             raise e
 
@@ -143,6 +161,30 @@ class DataBaseHandler:
         except FileNotFoundError as e:
             print(f"[Error]\t{e}")
 
+    def get_texture(self, user):
+        """
+        Get the texture of a user.
+
+        Args
+        ----
+        user: str
+            Name of user.
+
+        Returns
+        -------
+        texture: str
+            Name of texture.
+        """
+
+        user_texture = join(self.path, user, "texture.txt")
+
+        try:
+            with open(user_texture, "r") as f:
+                texture = f.read()
+        except FileNotFoundError as e:
+            print(f"[Error]\t{e}")
+
+        return texture
 
     def get_users(self):
         """
@@ -156,7 +198,7 @@ class DataBaseHandler:
 
         return listdir(self.path)
 
-    def entry(self, user, model):
+    def entry(self, owner):
         """
         Add a new entry to the database.
 
@@ -168,14 +210,31 @@ class DataBaseHandler:
             Object to be stored in database.
         """
 
-        self._add_user(user)
-        self._add_model_to_user(user, model)
+        self._add_user(owner.name)
+        self._add_user_texture(owner)
+        self._add_user_model(owner)
+
 
 if __name__ == "__main__":
+    class TestClass:
+        def __init__(self, name, texture, model):
+            self.name = name
+            self.texture = texture
+            self.model = model
+
     a, b = "1", "2"
-    h1 = DataBaseHandler(prefix="DEBUG_")
-    h1.entry("DEBUG_user1", a)
-    h1.entry("DEBUG_user2", b)
-    assert h1.get_model("DEBUG_user1") == "1"
-    assert h1.get_users() == ["DEBUG_user1", "DEBUG_user2"]
-    h1.get_model("DEBUG_user3") # Does not exist entry for user3 will therefore crash
+    p1 = TestClass("user1", "blue", a)
+    p2 = TestClass("user2", "red", b)
+
+
+    db = DataBaseHandler(prefix="DEBUG_")
+
+    db.entry(p1)
+    db.entry(p2)
+
+    try:
+        for username in db.get_users(): assert username in [p1.name, p2.name]
+        assert db.get_model(p1.name) == "1"
+        assert db.get_texture(p1.name) == "blue"
+    except AssertionError as e:
+        print(f"A test failed: {e}")
