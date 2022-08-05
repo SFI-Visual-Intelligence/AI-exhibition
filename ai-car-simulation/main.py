@@ -22,13 +22,13 @@ from db_handler import DataBaseHandler
 
 class Car:
 
-    def __init__(self):
+    def __init__(self, owner):
         # Load Car Sprite and Rotate
-        self.sprite = pg.image.load('car.png').convert_alpha() # Convert Speeds Up A Lot
+        self.owner = owner
+        self.sprite = pg.image.load(self.owner.texture).convert_alpha() # Convert Speeds Up A Lot
         self.sprite = pg.transform.scale(self.sprite, (CAR_SIZE_X, CAR_SIZE_Y))
         self.rotated_sprite = self.sprite 
 
-        # self.position = [690, 740] # Starting Position
         self.position = [830, 920] # Starting Position
         self.angle = 0
         self.speed = 0
@@ -48,6 +48,7 @@ class Car:
     def draw(self, screen):
         screen.blit(self.rotated_sprite, self.position) # Draw Sprite
         self.draw_radar(screen) #OPTIONAL FOR SENSORS
+        self.draw_owner_name(screen)
 
     def draw_radar(self, screen):
         # Optionally Draw All Sensors / Radars
@@ -55,6 +56,11 @@ class Car:
             position = radar[0]
             pg.draw.line(screen, (0, 255, 0), self.center, position, 1)
             pg.draw.circle(screen, (0, 255, 0), position, 5)
+
+    def draw_owner_name(self, screen):
+        font = pg.font.SysFont("Arial", 36)
+        text = font.render(self.owner.name, True, (0,255,0))
+        screen.blit(text, self.center + [100, -20])
 
     def check_collision(self, game_map):
         self.alive = True
@@ -151,12 +157,31 @@ class Car:
         return rotated_image
 
 class Simulation:
-    def __init__(self):
+    def __init__(self, train_map):
 
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT), pg.FULLSCREEN)
 
         self.current_generation = 0
+
+        path = os.path.dirname(__file__)
+        assets_path = os.path.join(path, "assets")
+        map_path = os.path.join(assets_path, "maps")
+
+        # Get maps paths
+        self.maps = [os.path.join(map_path, map_file) for map_file in sorted(os.listdir(map_path))]
+
+        self.map = self.maps[train_map - 1]
+
+        self.trainer = None
+
+        self.players = None
+
+    def add_trainer(self, trainer):
+        self.trainer = trainer
+
+    def add_players(self, players):
+        self.players = players
 
     def load(self, map):
         self.generation_font = pg.font.SysFont("Arial", 30)
@@ -168,23 +193,31 @@ class Simulation:
         nets = []
         cars = []
 
+        # If players is specified, cars are made as this and will not train up new models.
+        if not self.players is None:
+            cars = [Car(player) for player in self.players]
+
         for i, g in genomes:
             net = neat.nn.FeedForwardNetwork.create(g, config)
             nets.append(net)
             g.fitness = 0
 
-            cars.append(Car())
-
+            # if a trainer is specified cars are generated and trained.
+            if not self.trainer is None:
+                if self.trainer.is_trained and self.players is None:
+                    cars.append(Car(self.trainer))
+                
         return nets, cars
 
-    def run(self, genomes, config, mode="train"):
+    def run(self, genomes, config):
         """ Make the game able to play in same window """
         
+
         nets, cars = self.init_model(genomes, config)
 
         clock = pg.time.Clock()
         self.t = 0
-        game_map = self.load("map2.png")
+        game_map = self.load(self.map)
 
         while True:
 
@@ -269,7 +302,7 @@ class Simulation:
                     sys.exit(0)
 
 class NeatPlayer:
-    def __init__(self, config_path):
+    def __init__(self, config_path, map_ind):
 
         # set config path
         self.config_path = config_path
@@ -286,9 +319,9 @@ class NeatPlayer:
         )
         
         # Initialize simulation
-        self.sim = Simulation()
+        self.sim = Simulation(train_map=map_ind)
 
-    def train_ai(self, play_until_generation:int=10) -> None:
+    def train_ai(self, trainer, play_until_generation:int=10) -> None:
         """
         Method to start the training of the AI. The training will last until play_until_generation.
 
@@ -297,6 +330,12 @@ class NeatPlayer:
         play_until_generation: int
             Number of generations before training is complete.
         """
+
+        # Add trainer to simulation
+        self.sim.add_trainer(trainer)
+        
+        # set trainer attribute: is_trained = True
+        trainer.train()
 
         # Create Population and add Reporters
         population = neat.Population(self.config)
@@ -309,12 +348,61 @@ class NeatPlayer:
 
         return best_genome
 
-    def play(self, ai):
+    def play(self, players):
         """
         Method that
         """
 
-        self.sim.run(ai, self.config, mode="play")
+        # make a list of all players models (NB: genomes must be stored in a list as: [(1, model1), (1, model2)])
+        ai = [(1, player.model) for player in players]
+
+        # Add players to simulation
+        self.sim.add_players(players)
+
+        # Run the simulation
+        self.sim.run(ai, self.config)
+
+class RacingTrainer:
+    
+    path = os.path.join(os.path.dirname(__file__), "assets", "car-textures")
+
+    def __init__(self, name, car_texture=None, model=None):
+        self.__is_trained = False
+        self.name = name
+
+        self.__model = model
+
+        if car_texture is None:
+            self.texture = car_texture   
+            return
+        
+        self.texture = self.get_car_textures(self.path)[car_texture]
+
+
+    @property
+    def model(self):
+        return self.__model
+
+    @model.setter
+    def model(self, model):
+        self.__model = model
+
+    @property
+    def is_trained(self):
+        return self.__is_trained
+
+    def train(self):
+        self.__is_trained = True
+
+    def get_car_textures(self, path):
+        textures = dict()
+
+        for items in os.listdir(path):
+
+            # Set dict key = color and value = absolute path
+            textures[items.split(".")[0]] = os.path.join(path, items)
+
+        return textures
 
 if __name__ == "__main__":
 
@@ -329,23 +417,27 @@ if __name__ == "__main__":
     parser.add_argument("name", type=str, help="Name of the trainer.")
     parser.add_argument("-m", "--map", type=int, choices=[1, 2, 3, 4, 5], help="Select which map by integer (1 - 5) what map to use.")
     parser.add_argument("-t", "--train", action="store_true", help="Starts training a model to the user with specified number of generations using flag: --generations.")
+    parser.add_argument("-c", "--color", type=str, choices=["blue", "red"], help="Choose color for car (can only be set in training).")
     parser.add_argument("--generations", type=int, nargs="?", const=10, help="Number of generations model will train to.")
     parser.add_argument("-p", "--play", nargs="+", help="Who to play against")
     parser.add_argument("--show_opponents", action="store_true", help="Shows other possible opponents to play agains.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose mode")
     args = parser.parse_args()
 
+    # Read inputs if verbose flag set (exits).
     if args.verbose:
         print(f"[debug] name: {args.name}, map choice: {args.map}, train: {args.train}, opponent: {args.play}")
         exit()
+
     # Initialize database
     db = DataBaseHandler()
 
+    # Read other players if flag set (exits).
     if args.show_opponents:
         
         # Show opponents
         users = db.get_users()
-
+        
         if len(users) == 0:
             print("[info]\tNo registered users.")
         else:
@@ -355,31 +447,48 @@ if __name__ == "__main__":
         exit()
     
     # Initialize game
-    game = NeatPlayer(config_path)
+    game = NeatPlayer(config_path, args.map)
     
     if args.train:
+        # SET COLOR TOO HERE
+
+        trainer = RacingTrainer(args.name, args.color)
 
         # Train ai
-        ai = game.train_ai(args.generations)
+        ai = game.train_ai(trainer, args.generations)
+
+        trainer.model = ai
 
         # Add model to user database folder.
-        db.entry(args.name, ai)
+        db.entry(trainer)
 
     elif args.play:
 
-        # Load model of player
-        ownai = db.get_model(args.name)
+        # Create dict with players name as key and model as value
 
-        # load opponents ai
-        opponents_ai = [db.get_model(opponent) for opponent in args.play]
+        starting_player = RacingTrainer(args.name)
+        starting_player.texture = db.get_texture(starting_player.name)
+        starting_player.model = db.get_model(starting_player.name)
 
-        # Add all ai´s to list
-        ai = [(1, ownai)]
+        # Generate list of all players names starting with the main player.
+        players_names = [args.name] + args.play
 
-        for opponent_ai in opponents_ai:
-            ai.append((2, opponent_ai))
+        players = []
+        for name in players_names:
+            driver = RacingTrainer(name)
+            driver.texture = db.get_texture(name)
+            driver.model = db.get_model(name)
+            players.append(driver)
+        
 
-        game.play(ai)
+        # players = {args.name: db.get_model(args.name)}
+
+        # # Do the same for the specified opponents.
+        # for opponent in args.play:
+        #     players[opponent] = [db.get_model(opponent), random.choice(["red", "blue"])]
+
+        # start game with players
+        game.play(players)
 
 """
 https://stackoverflow.com/questions/61365668/applying-saved-neat-python-genome-to-test-environment-after-training

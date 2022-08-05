@@ -1,0 +1,1 @@
+/home/hulk/Desktop/AI-exhibition/ai-car-simulation/./assets/car-textures/red.png
