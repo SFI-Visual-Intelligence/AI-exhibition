@@ -1,3 +1,4 @@
+import csv
 import os
 import sys
 
@@ -10,7 +11,7 @@ from settings import *
 vec = pg.math.Vector2
 
 class Simulation:
-    def __init__(self, train_map):
+    def __init__(self, map):
 
         # init pygame and screen
         pg.init()
@@ -21,20 +22,25 @@ class Simulation:
 
         # set path
         path = os.path.dirname(__file__)
-        assets_path = os.path.join(path, "assets")
-        map_path = os.path.join(assets_path, "maps")
+        self.assets_path = os.path.join(path, "assets")
+        map_path = os.path.join(self.assets_path, "maps")
 
         # Get maps paths
         self.maps = [os.path.join(map_path, map_file) for map_file in sorted(os.listdir(map_path))]
 
         # select which map to use.
-        self.map = self.maps[train_map - 1]
+        self.map = self.maps[map - 1]
 
         # sets trainer if game-mode is training (1 object)
         self.trainer = None
 
         # sets players if game-mode is playing (multiple objects)
         self.players = None
+
+    def set_gamemode(self, mode):
+
+        # sets gamemode
+        self.mode = mode
 
     def add_trainer(self, trainer):
         self.trainer = trainer
@@ -58,8 +64,8 @@ class Simulation:
         """
 
         # Load fonts
-        self.generation_font = pg.font.SysFont("Arial", 30)
-        self.alive_font = pg.font.SysFont("Arial", 20)
+        self.header_font = pg.font.SysFont("Arial", 30)
+        self.subheader_font = pg.font.SysFont("Arial", 20)
 
         # Load game map, use convert_alpha as it speeds up computations and displaying of the image.
         game_map = pg.image.load(map).convert_alpha()
@@ -82,8 +88,9 @@ class Simulation:
         cars = []
 
         # If players is specified, cars are made as this and will not train up new models.
-        if not self.players is None:
-            cars = [Car(player) for player in self.players]
+        # if not self.players is None:
+        if self.mode is "playing":
+            cars = [Car(self, player) for player in self.players]
 
         for i, g in genomes:
             net = neat.nn.FeedForwardNetwork.create(g, config)
@@ -91,10 +98,18 @@ class Simulation:
             g.fitness = 0
 
             # if a trainer is specified cars are generated and trained.
-            if not self.trainer is None:
-                if self.trainer.is_trained and self.players is None:
-                    cars.append(Car(self.trainer))
-                
+            # if not self.trainer is None:
+            #     if self.trainer.is_trained and self.players is None:
+            if self.mode is "training":
+                cars.append(Car(self, self.trainer))
+        
+        if self.mode is "training":
+            self.time_left = MAX_GENERATION_TIME
+            self.maxtime = MAX_GENERATION_TIME
+        else:
+            self.time_left = MAX_PLAYTIME
+            self.maxtime = MAX_PLAYTIME
+
         return nets, cars
 
     def run(self, genomes, config):
@@ -112,7 +127,6 @@ class Simulation:
         
         # Initialize model
         nets, cars = self.init_model(genomes, config)
-
         # make a clock object for time-keeping
         clock = pg.time.Clock()
         self.t = 0
@@ -130,19 +144,47 @@ class Simulation:
             self.still_alive = self.update(nets, cars, genomes, game_map)
 
             # check if either no genomes still alive or maximum allowed play-time is exceeded.
-            if self.still_alive == 0 or self.t > MAX_GENERATION_TIME:
-                break
+            if self.still_alive == 0 or self.t > self.maxtime:
+                if self.mode == "training":
+                    break
+                self.game_over()
             
             # draw map, cars and show text.
             self.draw(game_map, cars)
-            self.display_text_training()
+
+            if self.mode == "training":
+                self.display_text_training()
+            else:
+                self.display_text_playing()
             
             # flip display and tick clock
             pg.display.flip()
             self.t += clock.tick(60) / 1000
 
+            # Calculate time left
+            self.time_left = self.maxtime - self.t
+
         # iter generation
         self.current_generation += 1
+
+    def game_over(self):
+        """
+        Should trigger when game mode is playing and either time runs out or all cars crashes.
+
+        This function stores the score of each player to a global leaderboards text file.
+        """
+        
+        leaderboard_path = os.path.join(self.assets_path, "leaderboard.csv")
+
+        header = ["Name", "Score", "Car", "Map"]
+        
+        scores = [[player.name, player.score, player.texture.split("/")[-1].split(".")[0]] for player in self.players]
+
+        with open(leaderboard_path, "a+", encoding="UTF-8", newline="\n") as f:
+            writer = csv.writer(f)
+            writer.writerows(scores)
+
+        sys.exit(0)
 
     def draw(self, map, cars):
         """
@@ -164,14 +206,28 @@ class Simulation:
 
 
     def display_text_training(self):
-        text = self.generation_font.render(f"Generation: {self.current_generation}", True, (0,0,0))
+        text = self.header_font.render(f"Generation: {self.current_generation}", True, (0,0,0))
         text_rect = text.get_rect(center = vec(900, 450))
         self.screen.blit(text, text_rect)
 
-        text = self.alive_font.render(f"Still Alive: {self.still_alive}", True, (0,0,0))
+        text = self.subheader_font.render(f"Still Alive: {self.still_alive}", True, (0,0,0))
         text_rect = text.get_rect(center = vec(900, 490))
         self.screen.blit(text, text_rect)
 
+    def display_text_playing(self):
+        # text = self.header_font.render(f"Players: {[player.name for player in self.players]}", True, (0,0,0))
+        text = self.header_font.render(f"Time left: {int(self.time_left)}", True, (0,0,0))
+        text_rect = text.get_rect(center = vec(900, 450))
+        self.screen.blit(text, text_rect)
+        
+        playerscores = ""
+
+        for player in self.players:
+            playerscores += str(player.name) + ": " + str(player.score) + " "
+
+        text = self.subheader_font.render(f"Scores: {playerscores}", True, (0,0,0))
+        text_rect = text.get_rect(center=vec(900, 490))
+        self.screen.blit(text, text_rect)
 
     def update(self, nets, cars, genomes, game_map):
         
@@ -202,10 +258,20 @@ class Simulation:
 
         still_alive = 0
         for i, car in enumerate(cars):
-            if car.is_alive():
-                still_alive += 1
-                car.update(game_map)
-                genomes[i][1].fitness += car.get_reward()
+            
+            if not car.is_alive():
+                continue 
+
+            still_alive += 1
+            car.update(game_map)
+
+            reward = car.get_reward()
+
+            genomes[i][1].fitness += reward
+
+            if self.mode == "playing":
+                self.players[i].score += int(reward) // 100
+            
 
         return still_alive
         

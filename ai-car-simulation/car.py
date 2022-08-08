@@ -8,8 +8,9 @@ from settings import *
 
 class Car:
 
-    def __init__(self, owner):
+    def __init__(self, game, owner):
         # Load Car Sprite and Rotate
+        self.game = game
         self.owner = owner
         self.sprite = pg.image.load(self.owner.texture).convert_alpha() # Convert Speeds Up A Lot
         self.sprite = pg.transform.scale(self.sprite, (CAR_SIZE_X, CAR_SIZE_Y))
@@ -33,8 +34,11 @@ class Car:
 
     def draw(self, screen):
         screen.blit(self.rotated_sprite, self.position) # Draw Sprite
-        self.draw_radar(screen) #OPTIONAL FOR SENSORS
-        self.draw_owner_name(screen)
+        
+        if self.game.mode == "training":
+            self.draw_radar(screen) #OPTIONAL FOR SENSORS
+        
+        # self.draw_owner_name(screen)
 
     def draw_radar(self, screen):
         # Optionally Draw All Sensors / Radars

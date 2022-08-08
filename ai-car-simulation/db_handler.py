@@ -126,10 +126,15 @@ class DataBaseHandler:
         """
 
         user_dir = join(self.path, owner.name, "texture.txt")
+        
+        # get only the color, not the full path
+        texture_to_save = owner.texture.split("/")[-1]
 
+        # Remove .png
+        texture_to_save = texture_to_save.split(".")[0]
         try:
             with open(user_dir, "w") as f:
-                f.write(owner.texture)
+                f.write(texture_to_save)
         except FileExistsError as e:
             raise e
 
