@@ -122,7 +122,7 @@ models = ['mosquito',
 
 path = os.path.dirname(__file__)
 for model in models:
-    link1 = "https://storage.googleapis.com/quickdraw-models/sketchRNN/small_models/" + model +".gen.js"
+    link1 = "https://storage.googleapis.com/quickdraw-models/sketchRNN/large_models/" + model +".gen.json"
     cmd = ['wget', '-P', path,link1]
     
     var = subprocess.Popen(cmd,stdout = subprocess.PIPE)
