@@ -34,3 +34,7 @@ Ram: 8.00GB<br>
 Platform: Ubuntu 20.04.4 LTS x86_64<br>
 Graphic card: NVIDIA GeForce GTX 1070 mobile<br>
 Disc space: 25 MB<p>
+    
+    
+Original code:
+https://github.com/magenta/magenta-demos/tree/main/sketch-rnn-js
