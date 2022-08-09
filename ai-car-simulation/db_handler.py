@@ -1,6 +1,7 @@
 import pickle
 from os import listdir, getcwd, chdir, makedirs, rmdir, remove
-from os.path import join, isdir
+from os.path import join, isdir, abspath
+from changedir import Changedir
 
 class DataBaseHandler:
     """
@@ -38,6 +39,8 @@ class DataBaseHandler:
 
         if not isdir(self.path):
             makedirs(self.path)
+
+        self.default_config_dir = abspath(join(self.path, "..", "assets"))
 
     def DEBUG_remove_database(self):
         """
@@ -78,7 +81,7 @@ class DataBaseHandler:
         rmdir(user_path)
         print(f"[debug]\t{user_path} removed.")
 
-    def _add_user(self, name:str):
+    def add_user(self, name:str):
         """
         Add a directory for a user.
 
@@ -137,6 +140,55 @@ class DataBaseHandler:
                 f.write(texture_to_save)
         except FileExistsError as e:
             raise e
+
+    def add_config(self, user, **configparams):
+        """
+        Store user modified config in database.
+
+        Args
+        ----
+        user: str
+            User to store new config to.
+        configparams: kwargs (dict)
+            Parameters from config file to modify. In principle any parameter can be changed, althoug only some have been tested:
+                weight_mutate_power,
+                weight_mutate_rate,
+                weight_replace_rate.
+        """
+        
+        # Use a context manager to keep track of source and dist.
+        with Changedir(self.default_config_dir, self.path) as changer:
+
+            defaultconfig = join(changer.newdir, "defaultconfig.txt")
+            userconfig = join(changer.olddir, user, "config.txt")
+            
+            # open the default config and temporarily store its content
+            with open(defaultconfig, "r") as rf:
+                data = rf.readlines()
+            
+            # iterate over content
+            for i, line in enumerate(data):
+
+                # See if parameter has a match in the configuration parameters
+                for parameter in configparams:
+
+                    if parameter in line:
+                        
+                        # split wanted line at equals mark
+                        new_line = data[i].split("= ")
+
+                        # Change line to new value
+                        changed_line = f"{configparams[parameter]}\n"
+
+                        # Concatenate with rest of line
+                        set_line = new_line[0] + "= " + changed_line
+
+                        # set the whole line to the modified line
+                        data[i] = set_line
+            
+            # Write modified config to user
+            with open(userconfig, "w+") as wf:
+                wf.writelines(data)
 
     def get_model(self, user):
         """
@@ -215,10 +267,9 @@ class DataBaseHandler:
             Object to be stored in database.
         """
 
-        self._add_user(owner.name)
+        self.add_user(owner.name)
         self._add_user_texture(owner)
         self._add_user_model(owner)
-
 
 if __name__ == "__main__":
     class TestClass:
@@ -236,6 +287,8 @@ if __name__ == "__main__":
 
     db.entry(p1)
     db.entry(p2)
+
+    db.add_config("user1", weight_mutate_power=0.2, weight_mutate_rate=0.5, weight_replace_rate=0.8)
 
     try:
         for username in db.get_users(): assert username in [p1.name, p2.name]
