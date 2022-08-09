@@ -5,13 +5,13 @@
 ## What is this?
 This program uses a neural network to be able to finish drawing that a person has drawn. The user selects something to draw from a list and then they can start drawing the selected animal or object. The program will then try and complete the drawing from what the user has drawn.
 
-#Setup
+## Setup
 The program is run with javascript and has to be run in the a browser. This can be done in the command line. Direct the commandline to the *sketch-rnn-js* folder and use the command:
 ```bash
 $ python3 -m http.server
 ```
 
-##Usage
+## Usage
 
 1. **Drawing and choosing what to draw**
 
