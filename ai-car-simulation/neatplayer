@@ -1,0 +1,71 @@
+from simulation import Simulation
+import neat
+
+class NeatPlayer:
+    def __init__(self, config_path, map_ind):
+
+        # set config path
+        self.config_path = config_path
+
+        # make config
+        self.config = neat.config.Config(
+            neat.DefaultGenome,
+            neat.DefaultReproduction,
+            neat.DefaultSpeciesSet,
+            neat.DefaultStagnation,
+            config_path
+        )
+        
+        # Initialize simulation
+        self.sim = Simulation(map=map_ind)
+
+    def train_ai(self, trainer, play_until_generation:int=10) -> None:
+        """
+        Method to start the training of the AI. The training will last until play_until_generation.
+
+        Args
+        ----
+        play_until_generation: int
+            Number of generations before training is complete.
+        """
+
+        # Add trainer to simulation
+        self.sim.add_trainer(trainer)
+        
+        # set game mode to simulation
+        self.sim.set_gamemode("training")
+
+        # set trainer attribute: is_trained = True
+        trainer.train()
+
+        # Create Population and add Reporters
+        population = neat.Population(self.config)
+        population.add_reporter(neat.StdOutReporter(True))
+        stats = neat.StatisticsReporter()
+        population.add_reporter(stats)
+
+        # runs the population
+        best_genome = population.run(self.sim.run, play_until_generation)
+
+        return best_genome
+
+    def play(self, players):
+        """
+        Method that also call Simulation.run, but only runs one for competing agains other players.
+
+        Args
+        ----
+        players: List(neat.DefaultGenome)
+            Pretrained genomes that compete against each other.
+        """
+
+        # make a list of all players models (NB: genomes must be stored in a list as: [(1, model1), (1, model2)])
+        ai = [(1, player.model) for player in players]
+
+        # Add players to simulation
+        self.sim.add_players(players)
+
+        self.sim.set_gamemode("playing")
+
+        # Run the simulation
+        self.sim.run(ai, self.config)
