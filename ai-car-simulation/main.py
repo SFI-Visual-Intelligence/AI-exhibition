@@ -6,6 +6,9 @@ Train and race agains Neat AI!
 This code has inspiration from YouTuber: NeuralNine which in turn was inspired by YouTuber: Cheesy AI.
 
 This code is modified to suit quickly learning a model, then when model training is satisfied, you can play it.
+
+THIS FILE IS DEPRECATED AS OF NOW!
+
 """
 
 import math
@@ -20,130 +23,9 @@ import pygame as pg
 from db_handler import DataBaseHandler
 from settings import *
 from simulation import Simulation
+from trainer import RacingTrainer
 
 
-class NeatPlayer:
-    def __init__(self, config_path, map_ind):
-
-        # set config path
-        self.config_path = config_path
-
-        # make config
-        self.config = neat.config.Config(
-            neat.DefaultGenome,
-            neat.DefaultReproduction,
-            neat.DefaultSpeciesSet,
-            neat.DefaultStagnation,
-            config_path
-        )
-        
-        # Initialize simulation
-        self.sim = Simulation(map=map_ind)
-
-    def train_ai(self, trainer, play_until_generation:int=10) -> None:
-        """
-        Method to start the training of the AI. The training will last until play_until_generation.
-
-        Args
-        ----
-        play_until_generation: int
-            Number of generations before training is complete.
-        """
-
-        # Add trainer to simulation
-        self.sim.add_trainer(trainer)
-        
-        # set game mode to simulation
-        self.sim.set_gamemode("training")
-
-        # set trainer attribute: is_trained = True
-        trainer.train()
-
-        # Create Population and add Reporters
-        population = neat.Population(self.config)
-        population.add_reporter(neat.StdOutReporter(True))
-        stats = neat.StatisticsReporter()
-        population.add_reporter(stats)
-
-        # runs the population
-        best_genome = population.run(self.sim.run, play_until_generation)
-
-        return best_genome
-
-    def play(self, players):
-        """
-        Method that also call Simulation.run, but only runs one for competing agains other players.
-
-        Args
-        ----
-        players: List(neat.DefaultGenome)
-            Pretrained genomes that compete against each other.
-        """
-
-        # make a list of all players models (NB: genomes must be stored in a list as: [(1, model1), (1, model2)])
-        ai = [(1, player.model) for player in players]
-
-        # Add players to simulation
-        self.sim.add_players(players)
-
-        self.sim.set_gamemode("playing")
-
-        # Run the simulation
-        self.sim.run(ai, self.config)
-
-class RacingTrainer:
-    
-    path = os.path.join(os.path.dirname(__file__), "assets", "car-textures")
-
-    def __init__(self, name, car_texture, model=None):
-        self.__is_trained = False
-        self.name = name
-
-        self.__model = model
-
-        if car_texture.endswith(".png"):
-            car_texture = car_texture.split(".")[0]
-
-        self.__texture = self.get_car_textures(self.path)[car_texture]
-
-        self.__score = 0
-
-    @property
-    def score(self):
-        return self.__score
-    
-    @score.setter
-    def score(self, points):
-        self.__score = points
-
-    @property
-    def model(self):
-        return self.__model
-
-    @model.setter
-    def model(self, model):
-        self.__model = model
-
-    @property
-    def texture(self):
-        return self.__texture
-
-    @property
-    def is_trained(self):
-        return self.__is_trained
-
-    def train(self):
-        self.__is_trained = True
-
-    def get_car_textures(self, path):
-        textures = dict()
-
-        for items in os.listdir(path):
-
-            # Set dict key = color and value = absolute path
-            textures[items.split(".")[0]] = os.path.join(path, items)
-
-        return textures
 
 if __name__ == "__main__":
 
