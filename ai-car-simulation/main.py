@@ -17,7 +17,6 @@ from argparse import ArgumentParser
 import neat
 import pygame as pg
 
-from car import Car
 from db_handler import DataBaseHandler
 from settings import *
 from simulation import Simulation
@@ -28,8 +27,6 @@ class NeatPlayer:
 
         # set config path
         self.config_path = config_path
-
-        self.checkpoint_dir = os.path.join(os.path.dirname(__file__), "checkpoints")
 
         # make config
         self.config = neat.config.Config(
@@ -154,7 +151,7 @@ if __name__ == "__main__":
 
     # # Load Config
     path = os.path.dirname(__file__)
-    config_path = os.path.join(path, "config.txt")
+    config_path = os.path.join(path, "config2.txt")
 
     colors = list(map(lambda x: x.split(".")[0], os.listdir(os.path.join(path, "assets", "car-textures"))))
 
@@ -210,14 +207,10 @@ if __name__ == "__main__":
 
     elif args.play:
         
-        # initialize competition by construction a RacingTrainer object for each player, 
-        # starting_player = RacingTrainer(args.name)
-        # starting_player.texture = db.get_texture(starting_player.name)
-        # starting_player.model = db.get_model(starting_player.name)
-
         # Generate list of all players names starting with the main player.
         players_names = [args.name] + args.play
 
+        # Make every player a racingtrainer and load their models and textures
         players = []
         for name in players_names:
             car_texture = db.get_texture(name)
@@ -227,7 +220,4 @@ if __name__ == "__main__":
         
         # start game with players
         game.play(players)
-
-"""
-https://stackoverflow.com/questions/61365668/applying-saved-neat-python-genome-to-test-environment-after-training
-"""
+        
