@@ -3,7 +3,7 @@ import os
 
 class RacingTrainer:
     
-    path = os.path.join(os.path.dirname(__file__), "assets", "car-textures")
+    texture_path = os.path.join(os.path.dirname(__file__), "assets", "car-textures")
 
     def __init__(self, name, car_texture, **config_params):
         self.__is_trained = False
@@ -16,7 +16,7 @@ class RacingTrainer:
         if car_texture.endswith(".png"):
             car_texture = car_texture.split(".")[0]
 
-        self.__texture = self.get_car_textures(self.path)[car_texture]
+        self.__texture = self.get_car_textures(self.texture_path)[car_texture]
 
         self.score = 0
 
