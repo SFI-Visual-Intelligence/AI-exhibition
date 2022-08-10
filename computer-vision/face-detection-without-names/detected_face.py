@@ -55,7 +55,6 @@ def rectangle_comparison(rectangle_list1, rectangle_list2):
     matches = []
 
     indexes = np.arange(len(rectangle_list2))
-    indexes1 = np.arange(len(rectangle_list1))
 
     # iterating over coordinates of first list of rectangles
     for i, (x1,y1,w1,h1) in enumerate(rectangle_list1):
