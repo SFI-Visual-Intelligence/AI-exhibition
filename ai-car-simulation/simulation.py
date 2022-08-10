@@ -67,6 +67,12 @@ class Simulation:
         self.header_font = pg.font.SysFont("Arial", 30)
         self.subheader_font = pg.font.SysFont("Arial", 20)
 
+        self.additional_fonts = []
+        if self.mode == "playing":
+            for i, _ in enumerate(self.players):
+                self.additional_fonts.append(pg.font.SysFont("Arial", 25))
+
+
         # Load game map, use convert_alpha as it speeds up computations and displaying of the image.
         game_map = pg.image.load(map).convert_alpha()
         return game_map
@@ -88,27 +94,32 @@ class Simulation:
         cars = []
 
         # If players is specified, cars are made as this and will not train up new models.
-        # if not self.players is None:
+
         if self.mode is "playing":
             cars = [Car(self, player) for player in self.players]
 
+            for (i, genome), config in zip(genomes, config):
+            # for genome in genomes:
+                net = neat.nn.FeedForwardNetwork.create(genome, config)
+                nets.append(net)
+                genome.fitness = 0
+
+            self.time_left = MAX_PLAYTIME
+            self.maxtime = MAX_PLAYTIME
+
+            return nets, cars
+
+        # If however the mode is training, cars are created for the trainer, one per genome and then trained.
         for i, g in genomes:
             net = neat.nn.FeedForwardNetwork.create(g, config)
             nets.append(net)
             g.fitness = 0
 
-            # if a trainer is specified cars are generated and trained.
-            # if not self.trainer is None:
-            #     if self.trainer.is_trained and self.players is None:
-            if self.mode is "training":
-                cars.append(Car(self, self.trainer))
+            cars.append(Car(self, self.trainer))
+
+        self.time_left = MAX_GENERATION_TIME
+        self.maxtime = MAX_GENERATION_TIME
         
-        if self.mode is "training":
-            self.time_left = MAX_GENERATION_TIME
-            self.maxtime = MAX_GENERATION_TIME
-        else:
-            self.time_left = MAX_PLAYTIME
-            self.maxtime = MAX_PLAYTIME
 
         return nets, cars
 
@@ -147,7 +158,8 @@ class Simulation:
             if self.still_alive == 0 or self.t > self.maxtime:
                 if self.mode == "training":
                     break
-                self.game_over()
+                # self.game_over()
+                sys.exit(0)
             
             # draw map, cars and show text.
             self.draw(game_map, cars)
@@ -216,18 +228,25 @@ class Simulation:
 
     def display_text_playing(self):
         # text = self.header_font.render(f"Players: {[player.name for player in self.players]}", True, (0,0,0))
+        texty = 450
         text = self.header_font.render(f"Time left: {int(self.time_left)}", True, (0,0,0))
-        text_rect = text.get_rect(center = vec(900, 450))
+        text_rect = text.get_rect(center = vec(920, texty))
         self.screen.blit(text, text_rect)
         
-        playerscores = ""
+        texty += 40
 
-        for player in self.players:
-            playerscores += str(player.name) + ": " + str(player.score) + " "
-
-        text = self.subheader_font.render(f"Scores: {playerscores}", True, (0,0,0))
-        text_rect = text.get_rect(center=vec(900, 490))
+        text = self.subheader_font.render("Scores:", True, (0,0,0))
+        text_rect = text.get_rect(center=vec(920, texty))
         self.screen.blit(text, text_rect)
+
+        texty += 40
+
+        # For each player display their score.
+        for i, font in enumerate(self.additional_fonts):
+            text = font.render(f"{self.players[i].name} - {self.players[i].score}", True, (0,0,0))
+            text_rect = text.get_rect(center=vec(920, texty))
+            self.screen.blit(text, text_rect)
+            texty += 40
 
     def update(self, nets, cars, genomes, game_map):
         
