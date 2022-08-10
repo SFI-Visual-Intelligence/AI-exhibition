@@ -6,11 +6,11 @@ from argparse import ArgumentParser, ArgumentTypeError
 import neat
 
 from db_handler import DataBaseHandler
-from trainer import RacingTrainer
 from simulation import Simulation
+from trainer import RacingTrainer
 
 path = os.path.dirname(__file__)
-map_path = os.path.join(path, "assets/maps")
+map_path = os.path.join(path, "assets", "maps")
 maps = os.listdir(map_path)
 
 def percentage_float(x):
