@@ -72,7 +72,7 @@ class DataBaseHandler:
         """
 
         # user_path = join(self.path, user)
-        user_path = self._get_user_dir(user)
+        user_path = self.get_user_dir(user)
 
         # find all files in directory
         files = listdir(user_path)
@@ -96,7 +96,7 @@ class DataBaseHandler:
         """
 
         # userpath = join(self.path, str(name))
-        userpath = self._get_user_dir(name)
+        userpath = self.get_user_dir(name)
 
         try:
             makedirs(userpath)
@@ -116,7 +116,7 @@ class DataBaseHandler:
             Object to be stored in database.
         """
         # user_model = join(self.path, user, "model.pkl")
-        user_model = join(self._get_user_dir(user), "model.pkl")
+        user_model = join(self.get_user_dir(user), "model.pkl")
 
         try:
             with open(user_model, "wb") as f:
@@ -139,7 +139,7 @@ class DataBaseHandler:
         """
 
         # user_dir = join(self.path, user, "texture.txt")
-        user_dir = join(self._get_user_dir(user), "texture.txt")
+        user_dir = join(self.get_user_dir(user), "texture.txt")
         
         # get only the color, not the full path
         texture_to_save = texture.split("/")[-1]
@@ -218,7 +218,7 @@ class DataBaseHandler:
         
         # path to users model
         # user_model = join(self.path, user, "model.pkl")
-        user_model = join(self._get_user_dir(user), "model.pkl")
+        user_model = join(self.get_user_dir(user), "model.pkl")
 
         # Try and catch error if user does not exist.
         try:
@@ -246,7 +246,7 @@ class DataBaseHandler:
         """
 
         # user_texture = join(self.path, user, "texture.txt")
-        user_texture = join(self._get_user_dir(user), "texture.txt")
+        user_texture = join(self.get_user_dir(user), "texture.txt")
 
         try:
             with open(user_texture, "r") as f:
@@ -279,14 +279,14 @@ class DataBaseHandler:
         """
 
         # set path to user directory
-        owner.db_path = self._get_user_dir(owner.name)
+        owner.db_path = self.get_user_dir(owner.name)
 
         # add attributes to database
         self._add_user(owner.name)
         self._add_user_texture(owner.name, owner.texture)
         self._add_config(owner.name, **owner.config_params)
 
-    def _get_user_dir(self, user):
+    def get_user_dir(self, user):
         """
         Get path to user directory.
 
