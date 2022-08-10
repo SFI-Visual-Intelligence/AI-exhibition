@@ -123,7 +123,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Setup a database for the trainer
-    db = DataBaseHandler(prefix="DEBUG2_")
+    db = DataBaseHandler()
     
     # Create a RacingTrainer object
     trainer = RacingTrainer(
