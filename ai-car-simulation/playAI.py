@@ -86,10 +86,10 @@ def argparser():
 
     parser = ArgumentParser(
         description='Play with your trained neural network.',
-        prog="playAI.py"
+        prog="./playAI.py"
     )
     parser.add_argument("player", type=name_exist, help="The name of the player, must exist a database record of this player.")
-    parser.add_argument("map", type=int, choices=range(1, len(maps) + 1), help="The name of the map to play on.")
+    parser.add_argument("map", type=int, choices=range(1, len(maps) + 1), help="The number of the map to play on.")
     parser.add_argument("opponent", type=name_exist, nargs="+", help="Opponents to play against.")
 
     return parser

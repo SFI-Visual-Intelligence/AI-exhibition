@@ -59,7 +59,7 @@ def argparser():
     # Get saved colors from ./assets/car-textures
     colors = list(map(lambda x: x.split(".")[0], os.listdir(os.path.join(path, "assets", "car-textures"))))
 
-    parser = ArgumentParser(prog="AI-NEAT-trainig", description="Train a neural network to drive a racing car.")
+    parser = ArgumentParser(prog="./trainAI.py", description="Train a neural network to drive a racing car.")
     parser.add_argument("trainer", type=censor_names, help="Select your trainer name")
     parser.add_argument("color", type=str, choices=colors, help="Select your car color")
     parser.add_argument("map", type=int, choices=range(1, len(maps) + 1), help=f"Select which map by integer (1 - {len(maps)}) to train on.")
