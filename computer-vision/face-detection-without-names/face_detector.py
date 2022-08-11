@@ -11,6 +11,7 @@ import detection
 from deepface import DeepFace
 from retinaface import RetinaFace
 import detected_face
+import buttons
 
 # initializing face recognition methods
 face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -47,8 +48,8 @@ while True:
     faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
     # Only allow the deepface algorithm to run when enough frames have gone due to slow performance of deepface analyze.
     
-    k = cv2.waitKey(33)
-    if k == 32: #run face analyse on pressing spacebar 
+    
+    if buttons.analyzation() == True:
         if len(faces) < 1:
             display_retry_val = 0
             display_retry = True
@@ -77,6 +78,10 @@ while True:
         cv2.putText(img, 'Face '+str(index), (x, y-25), font, 0.5, (0,0,0), 2)
         if check_val == 1 and len(matching_faces) > index:
             face_ = analyzed_faces[matching_faces[index]]
+        if check_val == 1 and len(matching_faces) < index + 1:
+            cv2.putText(img, 'Age: Not calculated', (x+w,y+15), font, 0.5, (0,0,0), 2)
+            cv2.putText(img, 'Gender: Not calculated', (x+w,y+30), font, 0.5, (0,0,0), 2)
+            cv2.putText(img, 'Emotion: Not calculated', (x+w,y+45), font, 0.5, (0,0, 0), 2)
         try:
             cv2.putText(img, 'Age: '+ str(face_.age), (x+w,y+15), font, 0.5, (0,0,0), 2)
             cv2.putText(img, 'Gender: '+ str(face_.gender), (x+w,y+30), font, 0.5, (0,0,0), 2)
@@ -88,8 +93,8 @@ while True:
 
 
     cv2.imshow('Camera',img)
-    k = cv2.waitKey(5) & 0xff # Press 'ESC' for exiting video
-    if k == 27:
+    
+    if buttons.endtest() == True:
         break
 # Do a bit of cleanup
 print("\n [INFO] Exiting Program and cleanup stuff")
