@@ -156,6 +156,7 @@ class AnalyzedFace:
         self.x, self.y, self.w, self.h = map(int, self.face["region"].values())
         self._gender = self.face["gender"]
         self._emotion = self.face["dominant_emotion"]
+        self._emotion_certainty = str(int(self.face['emotion'][self._emotion])) + '%'
         self._age = self.face["age"]
         self._name = None
         self._center = self.get_center(self.x, self.y, self.w, self.h)
@@ -204,6 +205,10 @@ class AnalyzedFace:
     @property
     def emotion(self):
         return self._emotion
+
+    @property
+    def emotion_certainty(self):
+        return self._emotion_certainty
 
     @property
     def age(self):

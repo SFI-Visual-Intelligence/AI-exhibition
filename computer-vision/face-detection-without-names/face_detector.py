@@ -2,6 +2,7 @@
 TODO: When the deepface algorithm finds a face but the haarcascade does not, 
 """
 
+from cgitb import text
 import cv2
 from cv2 import fastNlMeansDenoising
 import numpy as np
@@ -12,6 +13,7 @@ from deepface import DeepFace
 from retinaface import RetinaFace
 import detected_face
 import buttons
+import textdisplays
 
 # initializing face recognition methods
 face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -31,9 +33,9 @@ recognizer = cv2.face.LBPHFaceRecognizer_create()
 cam = cv2.VideoCapture(0)
 cam.set(3, int(640*3/2)) # set video width
 cam.set(4, int(480*3/2)) # set video height
-font = cv2.FONT_HERSHEY_SIMPLEX
+
 check_val = 0
-display_retry = fastNlMeansDenoising
+display_retry = False
 # images = os.listdir('video images')
 # frame = 0
 # max_frame = len(images)
@@ -62,10 +64,10 @@ while True:
         matching_faces = detected_face.rectangle_comparison(faces, face_analyed_pos)
         for index, match in enumerate(matching_faces):
             analyzed_faces[match].x, analyzed_faces[match].y, analyzed_faces[match].w, analyzed_faces[match].h = faces[index]
-    cv2.putText(img, 'Press Spacebar to analyse faces', (0, 15), font, 0.5, (0,0,0), 2)
+    img = textdisplays.press_space(img)
     if display_retry == True:
         
-        cv2.putText(img, 'Missed the face! Try again!', (0, 450), font, 1, (255,0,0), 2)
+        img = textdisplays.missed_face(img)
         display_retry_val += 1
         if display_retry_val == 50:
             display_retry = False
@@ -75,21 +77,15 @@ while True:
 
         # Draw rectangle from haarcascade face detection result.
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
-        cv2.putText(img, 'Face '+str(index), (x, y-25), font, 0.5, (0,0,0), 2)
+        # cv2.putText(img, 'Face '+str(index), (x, y-25), font, 0.5, (0,0,0), 2)
         if check_val == 1 and len(matching_faces) > index:
             face_ = analyzed_faces[matching_faces[index]]
         if check_val == 1 and len(matching_faces) < index + 1:
-            cv2.putText(img, 'Age: Not calculated', (x+w,y+15), font, 0.5, (0,0,0), 2)
-            cv2.putText(img, 'Gender: Not calculated', (x+w,y+30), font, 0.5, (0,0,0), 2)
-            cv2.putText(img, 'Emotion: Not calculated', (x+w,y+45), font, 0.5, (0,0, 0), 2)
+            img = textdisplays.lack_of_face(img, x,y,w,h)
         try:
-            cv2.putText(img, 'Age: '+ str(face_.age), (x+w,y+15), font, 0.5, (0,0,0), 2)
-            cv2.putText(img, 'Gender: '+ str(face_.gender), (x+w,y+30), font, 0.5, (0,0,0), 2)
-            cv2.putText(img, 'Emotion: '+ str(face_.emotion), (x+w,y+45), font, 0.5, (0,0, 0), 2)
+            img = textdisplays.face_estimations(img, face_, x, y, w, h)
         except:
-            cv2.putText(img, 'Age: Not calculated', (x+w,y+15), font, 0.5, (0,0,0), 2)
-            cv2.putText(img, 'Gender: Not calculated', (x+w,y+30), font, 0.5, (0,0,0), 2)
-            cv2.putText(img, 'Emotion: Not calculated', (x+w,y+45), font, 0.5, (0,0, 0), 2)
+            img = textdisplays.not_estimated(img, x, y, w, h)
 
 
     cv2.imshow('Camera',img)
