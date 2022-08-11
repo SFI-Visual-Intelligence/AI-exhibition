@@ -8,77 +8,175 @@ This is a demonstration and game of NEAT where each registered player is respons
 
 ## Setup
 
+This code has mainly been tested using the newest version of python (3.10.5).
 Ensure you have the required python libraries by installing from [requirements.txt](./requirements.txt).
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
+#### Additional recommended setup step (optional)
 
-The script provided in this directory is meant to be used from the command line, using the script `main.py`:
+Using a `python-venv`:
+On Unix distributions ensure `python-venv` is installed, can be installed with `apt install python3.x-venv` (replace `x` with wanted python version). Activate a `python venv` with:
 
 ```bash
-usage: AI-NEAT-racing [-h] [-m {1,2,3,4,5}] [-t] [--generations [GENERATIONS]] [-p PLAY [PLAY ...]] [--show_opponents] [-v] name
+python3 -m venv <venv-name>
+```
 
-Train an AI to race around maps
+Then go ahead and do the [setup](#setup)
+
+## Usage
+
+This code has three scripts that are meant to be run from a unix shell to train, play and display the leaderboard.
+
+In general there are two steps for being able to compete with other users AI´s:
+
+1. **[Training](#training)**: The user needs to train a model they can use to play against other users.
+2. **[Playing](#playing)**: The user needs to pick their opponents, as of now there is no limit to how many players one can play against, there is only a limit on how many other players have pre-trained models.
+3. **[Leaderboard](#leaderboard)** (Additionally) Display a global leaderboard on a per-map basis. 
+
+### Training
+To use the script a database entry of the player´s model is first needed. A script to do just this is [`trainAI.py`](./trainAI.py):
+
+```bash
+usage: ./trainAI.py [-h]
+                    trainer
+                    {alpine,redbull,astonmartin,mercedes,alphatauri,mclaren,blue,alpharomeo,ferrari,green,williams,haas,magenta,red}
+                    {1,2,3,4,5} [generations] [weight_mutate_power] [weight_mutate_rate] [weight_replace_rate]
+
+Train a neural network to drive a racing car.
 
 positional arguments:
-  name                  Name of the trainer.
+  trainer               Select your trainer name
+  {alpine,redbull,astonmartin,mercedes,alphatauri,mclaren,blue,alpharomeo,ferrari,green,williams,haas,magenta,red}
+                        Select your car color
+  {1,2,3,4,5}           Select which map by integer (1 - 5) to train on.
+  generations           Number of generations model will train to.
+  weight_mutate_power   Set the weight_mutate_power parameter in neat config. Value must be 0.0 < x < 1.0.
+  weight_mutate_rate    Set the weight_mutate_rate parameter in neat config. Value must be 0.0 < x < 1.0.
+  weight_replace_rate   Set the weight_replace_rate parameter in neat config. Value must be 0.0 < x < 1.0.
 
 options:
   -h, --help            show this help message and exit
-  -m {1,2,3,4,5}, --map {1,2,3,4,5}
-                        Select which map by integer (1 - 5) what map to use.
-  -t, --train           Starts training a model to the user with specified number of generations using flag: --generations.
-  --generations [GENERATIONS]
-                        Number of generations model will train to.
-  -p PLAY [PLAY ...], --play PLAY [PLAY ...]
-                        Who to play against
-  --show_opponents      Shows other possible opponents to play agains.
-  -v, --verbose         Verbose mode
 ```
 
-### Training
-To use the script a database of player´s models is first needed, therefore start by training your model with the command,
+**More specifically** the command is thought to be used as:
+```bash
+./trainAI.py <name : str> <color : str> <map : int> <generations : int> <mutation power : float> <mutation rate : float> <replace rate : float> 
+```
+
+#### Example training command
 
 ```bash
-./main.py user -m 2 -t --generations 12
+./trainAI.py Alice astonmartin 3 15 0.2 0.5 0.3
 ```
 
 This will start a `pygame` window with the different (non-interactive) models trying to learn the game map.
 
-When `generations` criteria has been met, the script stores the model to the `user`.
-
-### Other players
-
-To play against other opponents first ensure there are other opponents to play. This can be done using:
-
-```bash
-./main.py user --show_opponents
-```
-
-```bash
-[info] Showing registered users:
-       user
-       another_user
-       another_user2
-```
+When `generations` criteria has been met, the script stores the model to the `user`´s directory in the [database](./db_handler.py).
 
 ### Playing
 
-We are now ready to compete against other users ai´s.
+Once you have a trained model and there is at least one more player registered in the database you are ready to play. Use `./playAI.py` to start playing.
 
 ```bash
-./main.py user -m 2 -p another_user
+usage: ./playAI.py [-h] player {1,2,3,4,5} opponent [opponent ...]
+
+Play with your trained neural network.
+
+positional arguments:
+  player       The name of the player, must exist a database record of this player.
+  {1,2,3,4,5}  The number of the map to play on.
+  opponent     Opponents to play against.
+
+options:
+  -h, --help   show this help message and exit
 ```
 
-This will launch a competition between `user` and `another_user`.
+**More specifically**
+```bash
+./playAI.py <player1 : str> <map : int> <other players : str | list of str>
+```
 
-### Multiple players
-
-You can also play against multiple users at the same time.
+#### Example usage
 
 ```bash
-./main.py user -m 2 -p another_user another_user2
+./playAI.py Alice 3 Bob Mallory
+```
+
+This will launch a game on [map number 3](./assets/maps/map3.png) with three players - Alice, Bob and Mallory. When the game is over each of their scores are saved to [leaderboard for map number 3](./assets/leaderboards/leaderboard-map3.csv).
+
+### Leaderboard
+
+There is an additional callable cli script [leaderboard.py](./leaderboard.py) with usage:
+
+```bash
+usage: leaderboard.py [-h] [-t] {1,2,3,4,5}
+
+See the leaderboard
+
+positional arguments:
+  {1,2,3,4,5}  The map to show the leaderboard for.
+
+options:
+  -h, --help   show this help message and exit
+  -t, --test   Test the leaderboard.
+```
+
+The `-t`option injects some artificial users with scores to the specified leaderboard.
+
+### Database structure
+
+A simple implementation of a database is made for this project. Users get their own directory within the database directory, in each of the users entries three files are stored: `config.txt`, `model.pkl` and `texture.txt` which respectively represent what config to use in training, what model to use in playing and the texture the user specified which will be used in every display-aspect of the game.
+
+Graphical illustration of the database structure:
+
+```bash
+database
+├── Alice
+│   ├── config.txt
+│   ├── model.pkl
+│   └── texture.txt
+├── Bob
+│   ├── config.txt
+│   ├── model.pkl
+│   └── texture.txt
+└── Mallory
+    ├── config.txt
+    ├── model.pkl
+    └── texture.txt
+```
+
+### Assets
+
+The default resources used in the implementation is stored in `./assets`, with the exeption of the database. Here we find all car-textures, maps the default configuration, and the leaderboards.
+
+```bash
+assets
+├── car-textures
+│   ├── alpharomeo.png
+│   ├── alphatauri.png
+│   ├── alpine.png
+│   ├── astonmartin.png
+│   ├── blue.png
+│   ├── ferrari.png
+│   ├── green.png
+│   ├── haas.png
+│   ├── magenta.png
+│   ├── mclaren.png
+│   ├── mercedes.png
+│   ├── red.png
+│   ├── redbull.png
+│   └── williams.png
+├── defaultconfig.txt
+├── leaderboards
+└── maps
+    ├── map1.png
+    ├── map2.png
+    ├── map3.png
+    ├── map4.png
+    └── map5.png
+
+3 directories, 20 files
 ```
