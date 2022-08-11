@@ -28,6 +28,9 @@ $ pip install -r requirements.txt
 ## GUI vision
 We envision an interface where there is a start button and when it is pressed the program starts running and then a button appears for the face analyzation. After a while of not being interacted with, the program goes back to the start screen, and wipes the face estimations.
 
+
+
+
 **Hardware requirements**
 <p>The program was put together an run on a laptop.<br>
 The program can be run on a computer with the minimum spesifications:<br>
