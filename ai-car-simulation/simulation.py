@@ -7,6 +7,7 @@ import pygame as pg
 
 from car import Car
 from settings import *
+from leaderboard import LeaderboardHandler
 
 vec = pg.math.Vector2
 
@@ -30,6 +31,9 @@ class Simulation:
 
         # select which map to use.
         self.map = self.maps[map - 1]
+
+        # Make a leaderboard object.
+        self.leaderboard = LeaderboardHandler(map)
 
         # sets trainer if game-mode is training (1 object)
         self.trainer = None
@@ -158,8 +162,7 @@ class Simulation:
             if self.still_alive == 0 or self.t > self.maxtime:
                 if self.mode == "training":
                     break
-                # self.game_over()
-                sys.exit(0)
+                self.game_over()
             
             # draw map, cars and show text.
             self.draw(game_map, cars)
@@ -186,15 +189,8 @@ class Simulation:
         This function stores the score of each player to a global leaderboards text file.
         """
         
-        leaderboard_path = os.path.join(self.assets_path, "leaderboard.csv")
-
-        header = ["Name", "Score", "Car", "Map"]
-        
-        scores = [[player.name, player.score, player.texture.split("/")[-1].split(".")[0]] for player in self.players]
-
-        with open(leaderboard_path, "a+", encoding="UTF-8", newline="\n") as f:
-            writer = csv.writer(f)
-            writer.writerows(scores)
+        # Create leaderboard handler object.
+        self.leaderboard.add_score(self.players)
 
         sys.exit(0)
 
@@ -289,7 +285,7 @@ class Simulation:
             genomes[i][1].fitness += reward
 
             if self.mode == "playing":
-                self.players[i].score += int(reward) // 100
+                self.players[i].score += reward // 100
             
 
         return still_alive
