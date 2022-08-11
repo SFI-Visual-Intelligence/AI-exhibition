@@ -91,7 +91,7 @@ def argparser():
     parser.add_argument("player", type=name_exist, help="The name of the player, must exist a database record of this player.")
     parser.add_argument("map", type=int, choices=range(1, len(maps) + 1), help="The name of the map to play on.")
     parser.add_argument("opponent", type=name_exist, nargs="+", help="Opponents to play against.")
-    parser.add_argument("--show_players", action="store_true", help="Show the players that exist.")
+
     return parser
 
 def show_players():
@@ -113,10 +113,6 @@ if __name__ == "__main__":
     # parse arguments
     parser = argparser()
     args = parser.parse_args()
-
-    if args.show_players:
-        show_players()
-        exit(0)
 
     # Create RacingTrainer object for each player
     players = []
