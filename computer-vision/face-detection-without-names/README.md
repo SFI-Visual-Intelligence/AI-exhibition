@@ -25,7 +25,7 @@ $ pip install -r requirements.txt
 
     A videofeed will be displayed and the model will try to frame all the faces in the video feed. When the user(s) press the spacebar the *deepface.analyse* algorithm will run. Note that the first analyzation will make the video feed freeze for a few moments. The estimated age, gender and dominant emotion will be displayed on each face the algorithm found and it will update every time the user(s) press spacebar.
 
-# GUI vision
+**GUI vision**
 We envision an interface where there is a start button and when it is pressed the program starts running and then a button appears for the face analyzation. After a while of not being interacted with, the program goes back to the start screen, and wipes the face estimations.
 
 
