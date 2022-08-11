@@ -8,6 +8,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
 import cv2
+import buttons
 
 print("TF Version: ", tf.__version__)
 print("TF Hub version: ", hub.__version__)
@@ -53,9 +54,7 @@ def show_n(images, titles=('',)):
     plt.title(titles[i] if len(titles) > i else '')
   plt.show()
 
-def getIntegers(string):
-  numbers = [int(x) for x in string.split() if x.isnumeric()]
-  return numbers[0]
+
 
 
 output_image_size = 384  # @param {type:"integer"}
@@ -78,21 +77,26 @@ while cap_pic == True: #camerafeed
         pass
 
 print('Which image would you like to merge with?')
-print('1: Bonfire style')
-print('2: Abstarct painting style')
-print('3: Colorful blue painting style')
-print('4: Colorful painting style')
-print('5: Grey abstract painting style')
-print('6: Grey shadow painting style')
-print('7: Scream painting style')
-print('8: Starry night painting style')
-print('9: Waves art style')
-print('10: Lightning style\n')
-style_type = input('Enter the number of the style you want: ')
+options_list = ['Bonfire style', 'Abstarct painting style', 'Colorful blue painting style', 'Colorful painting style', 'Grey abstract painting style', 'Grey shadow painting style', 'Scream painting style', 'Starry night painting style', 'Waves art style', 'Lightning style\n']
+for number, option in enumerate(options_list):
+  print(number+1, ': ', option)
 
 
-style_number = getIntegers(style_type)
-if style_number > 10 or style_number < 1:
+# print('1: Bonfire style')
+# print('2: Abstarct painting style')
+# print('3: Colorful blue painting style')
+# print('4: Colorful painting style')
+# print('5: Grey abstract painting style')
+# print('6: Grey shadow painting style')
+# print('7: Scream painting style')
+# print('8: Starry night painting style')
+# print('9: Waves art style')
+# print('10: Lightning style\n')
+style_number = buttons.chosen_option()
+
+
+# style_number = getIntegers(style_type)
+if style_number > len(options_list) + 1 or style_number < 1:
   print('Not an option!')
   raise
 content_image1 = 'taken_image.jpg'
