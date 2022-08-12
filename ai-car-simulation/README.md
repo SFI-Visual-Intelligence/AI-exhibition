@@ -185,6 +185,11 @@ assets
 
 In general what is sorely missing from this implementation is a nice graphical UI which is highly accessible for children playing the game on a touch screen. The code and execution of commands and scripts have been tailored to be bound to buttons in a final GUI implementation, which is yet to be constructed.
 
+### Map generation
+
+Maps are easy to create! Simply make a png file where the starting line is in the same position as all other maps and draw a thick line from start to finish, the AI will stay inside the black line representing a road, and collide with white pixels.
+Once the map is finished, place it into `assets/maps`
+
 ### Known bugs / Issues
 
 1. Per player name there is only the option to store one model at a time. This means that if two users have the same username, the most recent registry will override the oldest model. This was a choice made due to when training some models it is not certain the AI will be able to drive any meaningful distance before the `generations` criteria is met, so all it takes to train the same user again is to use the same name when training and this will override the previous model. The thought of limiting each user to one training attempt therefore was not a viable option, and authenticating each user is uneccesarily much work. This is not necessarily too important but it has some side effects which I will come to now.
