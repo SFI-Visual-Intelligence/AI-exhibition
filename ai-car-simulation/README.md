@@ -191,4 +191,17 @@ In general what is sorely missing from this implementation is a nice graphical U
 
 2. A reprecussion of the issue mentioned above is that the leaderboard as per now only accepts one entry score from each user, duplicates of names with a lower score will always be discarded. To remove just this feature is simple enough, remove pandas function [drop_duplicates](https://github.com/SFI-Visual-Intelligence/AI-exhibition/blob/main/ai-car-simulation/leaderboard.py?plain=1#L50).
 
+<<<<<<< HEAD
 3. **Be aware**: When initially cloning the repository from github an error might arise where the leaderboard folder is not present, therefore if an `OSError` is encountered, please create the folder: `./assets/leaderboards`.
+=======
+
+
+**Hardware requirements**
+<p>The program was put together an run on a laptop.<br>
+The program can be run on a computer with the minimum spesifications:<br>
+Processor: Intel Core i3-5005U CPU<br>
+Ram: 8.00GB<br>
+Platform: Windows x64<br>
+Graphic card: None<br>
+Disc space: 800 MB<p>
+>>>>>>> d352ad5fab336dac44d2ffcb26a145345ae6c99c
