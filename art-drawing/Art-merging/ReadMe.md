@@ -40,7 +40,7 @@ Maybe remove the lightning image since rights to the image has not been checked.
 
 ## GUI-idea
 
-![gui-idea](./gui-idea.png)
+[![gui-idea](./gui-idea.png)](https://github.com/SFI-Visual-Intelligence/AI-exhibition/blob/main/art-drawing/Art-merging/gui-idea.png)
 
 **Hardware requirements**
 <p>The program was put together an run on a laptop.<br>
