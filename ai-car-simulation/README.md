@@ -185,9 +185,9 @@ assets
 
 In general what is sorely missing from this implementation is a nice graphical UI which is highly accessible for children playing the game on a touch screen. The code and execution of commands and scripts have been tailored to be bound to buttons in a final GUI implementation, which is yet to be constructed.
 
-![training](gui-ideas/training.png "Training")
+[![training](gui-ideas/training.png "Training")](https://github.com/SFI-Visual-Intelligence/AI-exhibition/blob/main/ai-car-simulation/gui-ideas/training.png)
 
-![playing](gui-ideas/playing.png "Playing")
+(![playing](gui-ideas/playing.png "Playing")](https://github.com/SFI-Visual-Intelligence/AI-exhibition/blob/main/ai-car-simulation/gui-ideas/playing.png)
 
 ### Creating new maps
 
