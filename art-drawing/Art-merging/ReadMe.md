@@ -34,6 +34,9 @@ Original image with style image and stylized image:
 ## How it works - Short description
 The algorithm uses deeplearning the generate one image in the style of another. This is called *neural style transfer*. The achitecture of the neural network follows VGG19. The first few layers in the network represent low-level features like egdes and textures, while the final few layers represent higher-level features like object parts. The intermidiate layers define the style.
 
+## NB
+Maybe remove the lightning image since rights to the image has not been checked.<br>
+
 
 ## GUI-idea
 
