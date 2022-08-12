@@ -185,6 +185,10 @@ assets
 
 In general what is sorely missing from this implementation is a nice graphical UI which is highly accessible for children playing the game on a touch screen. The code and execution of commands and scripts have been tailored to be bound to buttons in a final GUI implementation, which is yet to be constructed.
 
+![training](gui-ideas/training.png "Training")
+
+![playing](gui-ideas/playing.png "Playing")
+
 ### Creating new maps
 
 Maps are easy to create! Simply make a png file where the starting line is in the same position as all other maps and draw a thick line from start to finish, the AI will stay inside the black line representing a road, and collide with white pixels.
