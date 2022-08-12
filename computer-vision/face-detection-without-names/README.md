@@ -28,8 +28,10 @@ $ pip install -r requirements.txt
 **GUI vision**
 <p>We envision an interface where there is a start button and when it is pressed the program starts running and then a button appears for the face analyzation. After a while of not being interacted with, the program goes back to the start screen, and wipes the face estimations.<p>
 
+## Known issues
 
-
+1. **Faces with wrong information**
+    <p> When the estimation of attributes are run on one or multiple faces the position of the faces the estiamtions has been done on are updated so that the estimations are displayed on the correct faces. However if the faces disappear (people leaving the frame) the information is not removed, which means that when new faces appear the previous estimations will be displayed on them until they rerun the estimation algorithm. <p>
 
 **Hardware requirements**
 <p>The program was put together an run on a laptop.<br>
