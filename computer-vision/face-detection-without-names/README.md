@@ -28,6 +28,10 @@ $ pip install -r requirements.txt
 **GUI vision**
 <p>We envision an interface where there is a start button and when it is pressed the program starts running and then a button appears for the face analyzation. After a while of not being interacted with, the program goes back to the start screen, and wipes the face estimations.<p>
 
+#### GUI-idea
+
+![gui-idea](./gui-idea.png)
+
 ## Known issues
 
 1. **Faces with wrong information**

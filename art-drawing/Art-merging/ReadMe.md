@@ -35,6 +35,10 @@ Original image with style image and stylized image:
 The algorithm uses deeplearning the generate one image in the style of another. This is called *neural style transfer*. The achitecture of the neural network follows VGG19. The first few layers in the network represent low-level features like egdes and textures, while the final few layers represent higher-level features like object parts. The intermidiate layers define the style.
 
 
+## GUI-idea
+
+![gui-idea](./gui-idea.png)
+
 **Hardware requirements**
 <p>The program was put together an run on a laptop.<br>
 The program can be run on a computer with the minimum spesifications:<br>
