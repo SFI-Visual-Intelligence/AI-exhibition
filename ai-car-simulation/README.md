@@ -180,3 +180,13 @@ assets
 
 3 directories, 20 files
 ```
+
+## How to contribute
+
+In general what is sorely missing from this implementation is a nice graphical UI which is highly accessible for children playing the game on a touch screen. The code and execution of commands and scripts have been tailored to be bound to buttons in a final GUI implementation, which is yet to be constructed.
+
+### Known bugs / Issues
+
+1. Per player name there is only the option to store one model at a time. This means that if two users have the same username, the most recent registry will override the oldest model. This was a choice made due to when training some models it is not certain the AI will be able to drive any meaningful distance before the `generations` criteria is met, so all it takes to train the same user again is to use the same name when training and this will override the previous model. The thought of limiting each user to one training attempt therefore was not a viable option, and authenticating each user is uneccesarily much work. This is not necessarily too important but it has some side effects which I will come to now.
+
+2. A reprecussion of the issue mentioned above is that the leaderboard as per now only accepts one entry score from each user, duplicates of names with a lower score will always be discarded. To remove just this feature is simple enough, remove pandas function [drop_duplicates](https://github.com/SFI-Visual-Intelligence/AI-exhibition/blob/main/ai-car-simulation/leaderboard.py?plain=1#L50).
