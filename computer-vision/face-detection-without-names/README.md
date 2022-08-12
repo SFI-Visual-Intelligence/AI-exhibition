@@ -30,7 +30,7 @@ $ pip install -r requirements.txt
 
 #### GUI-idea
 
-![gui-idea](./gui-idea.png)
+[![gui-idea](./gui-idea.png)](https://github.com/SFI-Visual-Intelligence/AI-exhibition/tree/main/computer-vision/face-detection-without-names)
 
 ## Known issues
 
