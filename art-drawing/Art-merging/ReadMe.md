@@ -25,7 +25,7 @@ $ pip install -r requirements.txt
 
     **Try and make sure that the background does not have to much variation of shapes and colors.**
     After capturing an image the user will be prompted about which style they want the image to be in. The user is prompted with options 1 to 9, which are each different styles, the user will input the number of the style they want. More styles can be added.
-    Both the taken image and the chosen style will be displayed. Close the window and wait until the new image is created. When the image is finished it will be displayed along with the original taken image and the style chosen. All images generated from capturing and during the algorithm will be deleted when the program is finished.
+    Both the taken image and the chosen style will be displayed. Close the window and wait until the new image is created. When the image is finished it will be displayed along with the original taken image and the style chosen. All images generated from capturing and during the algorithm will be deleted when the program is finished. Note that the program does not focus on people or their faces, it takes the image as a whole han applies the new style.
 **Here is an example of the flash from DC comic stylized in purple lightning**
 
 Original image with style image and stylized image:

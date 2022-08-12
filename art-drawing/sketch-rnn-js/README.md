@@ -25,6 +25,13 @@ The light green part of the mosquito was drawn by the user:
 
 <img src="example_images/image1.png" width="230"/> <img src="example_images/image2.png" width="230"/> <img src="example_images/image3.png" width="230"/> 
 
+## Known issues
+1. **The program is made to run online**
+    <p> The program originally download the models that the user wants to use from googleapis and stores them in the cache while the program is running. The models are removed upon restart and has to be downloaded again. We wanted to download all the models so that the program can run offline. So the program needs to be able to access the models whilst running or somehow store all the models in the cache before taking it offline. In the 'skecth-rnn.js' script the function 'loadJSON' is called in line 335. The function is defined in line 266 where it downloads the models from the URL.<p>
+
+## Possible python version
+We found the 'sketch-rnn' program in a python version, however to late to try and make it work. We also found multiple other magenta demos that were written in python. This can be looked through and tested. <br> 
+Magenta models written in python: https://github.com/magenta/magenta/tree/main/magenta/models
 
 ## Hardware requirements
 <p>The program was put together an run on a laptop.<br>
