@@ -41,11 +41,12 @@ def load_image(path, image_size=(256, 256), preserve_aspect_ratio=True):
   img = tf.image.resize(img, image_size, preserve_aspect_ratio=True)
   return img
 
-def show_n(images, titles=('',)):
+def show_n(images, titles=('',), figtitle=''):
   n = len(images)
   image_sizes = [image.shape[1] for image in images]
   w = (image_sizes[0] * 6) // 320
   plt.figure(figsize=(w * n, w))
+  plt.suptitle(figtitle, fontsize=14)
   gs = gridspec.GridSpec(1, n, width_ratios=image_sizes)
   for i in range(n):
     plt.subplot(gs[i])
@@ -121,7 +122,7 @@ style_img_size = (256, 256)  # Recommended to keep it at 256.
 content_image = load_image(content_image1, content_img_size)
 style_image = load_image(style_image1, style_img_size)
 style_image = tf.nn.avg_pool(style_image, ksize=[3,3], strides=[1,1], padding='SAME')
-show_n([content_image, style_image], ['Content image', 'Style image'])
+show_n([content_image, style_image], ['Content image', 'Style image'], figtitle='Close this window to continue')
 
 # + [markdown] id="yL2Bn5ThR1nY"
 # ## Import TF Hub module
