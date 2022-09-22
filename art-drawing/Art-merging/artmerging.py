@@ -129,9 +129,11 @@ show_n([content_image, style_image], ['Content image', 'Style image'])
 # + id="467AVDSuzBPc"
 # Load TF Hub module.
 
+print('Loading model...')
+print('This may take time when used for the first time.')
 hub_handle = 'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2'
 hub_module = hub.load(hub_handle)
-
+print('Model loaded.')
 # + [markdown] id="uAR70_3wLEDB"
 # The signature of this hub module for image stylization is:
 # ```
@@ -153,10 +155,10 @@ hub_module = hub.load(hub_handle)
 # + id="lnAv-F3O9fLV"
 # Stylize content image with given style image.
 # This is pretty fast within a few milliseconds on a GPU.
-
+print('Processing the image...')
 outputs = hub_module(tf.constant(content_image), tf.constant(style_image))
 stylized_image = outputs[0]
-
+print('Image processed.')
 
 show_n([content_image, style_image, stylized_image], titles=['Original content image', 'Style image', 'Stylized image'])
 os.remove('taken_image.jpg')
