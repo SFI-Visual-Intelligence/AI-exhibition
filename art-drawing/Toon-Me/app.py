@@ -15,6 +15,23 @@ import cv2
 import matplotlib.pyplot as plt
 import os
 
+path = '.'
+
+# Download the neural net weights if they are not already downloaded
+colorNNweightsfile = os.path.join(path, 'Toon-Me_820.pkl')
+if not os.path.isfile(colorNNweightsfile):
+    print('Downloading weights for color neural network...')
+    url = 'https://www.dropbox.com/s/6k4bdq5lessc53e/Toon-Me_820.pkl?dl=1'
+    r = requests.get(url, allow_redirects=True)
+    open(colorNNweightsfile, 'wb').write(r.content)
+
+greyNNweightsfile = os.path.join(path, 'ArtLine_920.pkl')
+if not os.path.isfile(greyNNweightsfile):
+    print('Downloading weights for greyscale neural network...')
+    url = 'https://www.dropbox.com/s/04suaimdpru76h3/ArtLine_920.pkl?dl=1'
+    r = requests.get(url, allow_redirects=True)
+    open(greyNNweightsfile, 'wb').write(r.content)
+
 cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
 
 cap_pic = True
