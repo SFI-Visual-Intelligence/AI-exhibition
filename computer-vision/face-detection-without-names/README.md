@@ -4,7 +4,7 @@
 ---
 ## What is this?
 
-This program uses two different premade machine learning algorithms to first detect a face and display the name of the person, then another algorithm will analyze each face it sees and display a predicted *age*, *gender* and *emotion* to this face.
+This program uses two different pre-made machine learning algorithms to first detect a face and display the name of the person, then another algorithm will analyze each face it sees and display a predicted *age*, *gender* and *emotion* to this face. It uses the Python modules [Deepface](https://github.com/serengil/deepface) and [openCV](https://github.com/opencv/opencv-python).
 
 ## Setup
 
