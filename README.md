@@ -2,6 +2,8 @@
 
 Welcome to the AI Exhibition project repo. You will find here a description of the project. The machine learning demos prepared for the exhibition are inside the folders. The name of each folder gives you an idea of the content. Each demo has its own description and open source code. Most of them uses Python and additional Python modules, specified in the `requirements.txt` file.
 
+A list of demos planned for the exibition is written on [DemoDescription.md].
+
 ## Background
 Artificial intelligence (AI) and machine learning (ML) methods are becoming increasingly important in many aspects of society. This technology is already used daily in many consumer products, such as  mobile phones, self-driving cars, cameras. Also it is increasingly explored for industrial applications, for instance in the health-care, energy and maritime domains. 
 
