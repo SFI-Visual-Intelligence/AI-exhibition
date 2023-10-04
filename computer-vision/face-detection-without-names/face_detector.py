@@ -31,8 +31,12 @@ recognizer = cv2.face.LBPHFaceRecognizer_create()
 
 # Initialize and start realtime video capture
 cam = cv2.VideoCapture(0)
-cam.set(3, int(640*3/2)) # set video width
-cam.set(4, int(480*3/2)) # set video height
+width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+print(f'resolution {width} x {height}')
+zoom = 1
+cam.set(3, int(width * zoom)) # set video width
+cam.set(4, int(height * zoom)) # set video height
 
 check_val = 0
 display_retry = False
@@ -87,8 +91,9 @@ while True:
         except:
             img = textdisplays.not_estimated(img, x, y, w, h)
 
-
-    cv2.imshow('Camera',img)
+    #imgS = cv2.resize(img, (width*2, height*2))                # Resize image
+    imgS = img
+    cv2.imshow('Camera',imgS)
     
     if buttons.endtest() == True:
         break
