@@ -19,42 +19,31 @@ import textdisplays
 face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-# for names in person_id2name.values():
-#     people[names] = ['calculating...', 'calculating...', 'calculating...']
-# people[undefined_person] = ['unknown', 'unknown', 'unknown']
-
-# def get_face_from_index(faces, ind):    #match indexes 
-#     for face in faces:
-#         # print(face.haarcascade_id, ind, 'get faces from index')
-#         if face.haarcascade_id == ind:
-#             return face
-
 # Initialize and start realtime video capture
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(0)# (0) or ("/dev/video0"), usb webcam cam have a higher number
 width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-print(f'resolution {width} x {height}')
-zoom = 1
+print('Press "esc" key to exit')
+print('Press space bar to compute the values')
+print(f'Camera resolution {width} x {height}')
+zoom = 2
+
+# change the size
 cam.set(3, int(width * zoom)) # set video width
 cam.set(4, int(height * zoom)) # set video height
 
+
+
 check_val = 0
 display_retry = False
-# images = os.listdir('video images')
-# frame = 0
-# max_frame = len(images)
+
 while True:
     ret, img = cam.read()
     img = cv2.flip(img, 1) # mirror
-    # if frame == max_frame:
-    #     frame = 0
-    # img = cv2.imread('video images/' + images[frame])
-    # img = img[50:500, 150:1000]
-    # frame += 1
+    img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
+
     faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
-    # Only allow the deepface algorithm to run when enough frames have gone due to slow performance of deepface analyze.
-    
-    
+        
     if buttons.analyzation() == True:
         if len(faces) < 1:
             display_retry_val = 0
