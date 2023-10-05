@@ -4,21 +4,18 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 fontsize = 1
 
 def lack_of_face(img, x,y,w,h):
-    cv2.putText(img, 'Age: Not calculated', (x+w,y+(15*fontsize)), font, fontsize, (0,0,0), 2)
-    cv2.putText(img, 'Gender: Not calculated', (x+w,y+(40*fontsize)), font, fontsize, (0,0,0), 2)
-    cv2.putText(img, 'Emotion: Not calculated', (x+w,y+(65*fontsize)), font, fontsize, (0,0, 0), 2)
+    cv2.putText(img, '.', (x+w,y+(15*fontsize)), font, fontsize, (0,0,0), 2)
     return img
 
 def face_estimations(img, face, x, y, w ,h):
     cv2.putText(img, 'Age: '+ str(face.age), (x+w,y+(15*fontsize)), font, fontsize, (0,0,0), 2)
-    cv2.putText(img, 'Gender: '+ str(face.gender), (x+w,y+(40*fontsize)), font, fontsize, (0,0,0), 2)
-    cv2.putText(img, 'Emotion: ' + str(face.emotion_certainty) +' ' + str(face.emotion), (x+w,y+(65*fontsize)), font, fontsize, (0,0, 0), 2)
+    cv2.putText(img, str(face.gender), (x+w,y+(40*fontsize)), font, fontsize, (0,0,0), 2)
+    cv2.putText(img, str(face.emotion), (x+w,y+(65*fontsize)), font, fontsize, (0,0, 0), 2)
+    cv2.putText(img, str(face.emotion_certainty) + ' sure', (x+w,y+(90*fontsize)), font, fontsize, (0,0, 0), 2)
     return img
 
 def not_estimated(img, x, y, w, h):
-    cv2.putText(img, 'Age: Not calculated', (x+w,y+(15*fontsize)), font, fontsize, (0,0,0), 2)
-    cv2.putText(img, 'Gender: Not calculated', (x+w,y+(40*fontsize)), font, fontsize, (0,0,0), 2)
-    cv2.putText(img, 'Emotion: Not calculated', (x+w,y+(65*fontsize)), font, fontsize, (0,0, 0), 2)
+    cv2.putText(img, '.', (x+w,y+(15*fontsize)), font, fontsize, (0,0,0), 2)
     return img
 
 def missed_face(img):
