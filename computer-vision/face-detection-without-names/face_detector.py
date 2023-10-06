@@ -14,6 +14,9 @@ from retinaface import RetinaFace
 import detected_face
 import buttons
 import textdisplays
+import time
+
+reset_time = 4.0 # reset text display time in seconds
 
 # initializing face recognition methods
 face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -32,53 +35,64 @@ zoom = 2
 cam.set(3, int(width * zoom)) # set video width
 cam.set(4, int(height * zoom)) # set video height
 
+# initialize timer
+previous = time.time()
+delta = 0
 
-
-check_val = 0
-display_retry = False
+analyzed = 0
+display_val = False
 
 while True:
     ret, img = cam.read()
     img = cv2.flip(img, 1) # mirror
-    img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
+    #img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
+    img = textdisplays.press_space(img)
+
+    current = time.time()
+    delta += current - previous
+    previous = current
 
     faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
         
     if buttons.analyzation() == True:
+        delta = 0
+        display_val = True
         if len(faces) < 1:
-            display_retry_val = 0
-            display_retry = True
+            pass
         else:
             analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion and orders after faces found in line 39
-            frame = 0 
-            check_val = 1
-    if check_val == 1:
-        face_analyed_pos = [face.rect for face in analyzed_faces]
-        matching_faces = detected_face.rectangle_comparison(faces, face_analyed_pos)
+            analyzed = 1
+            face_analyzed_pos = [face.rect for face in analyzed_faces]    
+    
+    if analyzed == 1:        
+        matching_faces = detected_face.rectangle_comparison(faces, face_analyzed_pos)
         for index, match in enumerate(matching_faces):
             analyzed_faces[match].x, analyzed_faces[match].y, analyzed_faces[match].w, analyzed_faces[match].h = faces[index]
-    img = textdisplays.press_space(img)
-    if display_retry == True:
-        
-        img = textdisplays.missed_face(img)
-        display_retry_val += 1
-        if display_retry_val == 50:
-            display_retry = False
 
     # Iterate over each face found from first model.
     for index, (x,y,w,h) in enumerate(faces):
-
         # Draw rectangle from haarcascade face detection result.
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
-        # cv2.putText(img, 'Face '+str(index), (x, y-25), font, 0.5, (0,0,0), 2)
-        if check_val == 1 and len(matching_faces) > index:
+        
+        if analyzed == 1 and len(matching_faces) > index:
             face_ = analyzed_faces[matching_faces[index]]
-        if check_val == 1 and len(matching_faces) < index + 1:
+        if analyzed == 1 and len(matching_faces) < index + 1:
             img = textdisplays.lack_of_face(img, x,y,w,h)
-        try:
-            img = textdisplays.face_estimations(img, face_, x, y, w, h)
-        except:
-            img = textdisplays.not_estimated(img, x, y, w, h)
+
+        if delta > reset_time:
+            print(f'{reset_time} seconds have passed')
+            #img = textdisplays.clear_text(img, x, y, w, h)
+            display_val = False
+        elif display_val == False:
+            pass
+        else:
+            try:
+                img = textdisplays.face_estimations(img, face_, x, y, w, h)
+            except:
+                img = textdisplays.not_estimated(img, x, y, w, h)
+
+    if delta > reset_time:
+        delta = 0
 
     #imgS = cv2.resize(img, (width*2, height*2))                # Resize image
     imgS = img
@@ -86,6 +100,7 @@ while True:
     
     if buttons.endtest() == True:
         break
+
 # Do a bit of cleanup
 print("\n [INFO] Exiting Program and cleanup stuff")
 cam.release()
