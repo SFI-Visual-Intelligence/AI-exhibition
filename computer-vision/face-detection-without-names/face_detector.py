@@ -10,13 +10,24 @@ import detected_face
 import buttons
 import textdisplays
 import time
+import logging
+import logging.handlers as handlers
 ##
 # TODO: 
 # - test other face detection methods
-# - record the number of faces analyzed each day in a file or each hour
 ##
+
+# initialize the recording of analyses
+logger = logging.getLogger('monitor_analysis')
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(message)s')
+fh = logging.FileHandler('analysis.log')
+fh.setLevel(logging.INFO)
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
 reset_time = 4.0 # reset text display time in seconds
-trigger_time = 2.0 # time between 2 analyzes
+trigger_time = 2.0 # time between 2 analyses
 
 # initializing face recognition methods
 face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -61,6 +72,7 @@ while True:
         delta = 0
         analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion
         face_analyzed_pos = [face.rect for face in analyzed_faces]
+        logger.info(f'{len(analyzed_faces)}')
         analyzed = 1
     
     if analyzed == 1:        
