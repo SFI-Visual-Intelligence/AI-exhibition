@@ -117,7 +117,7 @@ def face_analyzing(img, haar_faces):
         faces_found.append(img[int(x*2/3):int(x*2/3 + w*3/2), int(y*2/3):int(y*2/3 + h*3/2)])
         
     # Estimates age, gender and emotion of face found.
-    estimation = DeepFace.analyze(faces_found, actions = ['age', 'gender', 'emotion'], enforce_detection=False) 
+    estimation = DeepFace.analyze(faces_found, actions = ['emotion'], enforce_detection=False) 
     
     # Instantiate object for each face
     faces = [AnalyzedFace(face_attributes) for _, face_attributes in estimation.items()]
@@ -154,10 +154,16 @@ class AnalyzedFace:
     def __init__(self, face):
         self.face = face
         self.x, self.y, self.w, self.h = map(int, self.face["region"].values())
-        self._gender = self.face["gender"]
-        self._emotion = self.face["dominant_emotion"]
-        self._emotion_certainty = str(int(self.face['emotion'][self._emotion])) + '%'
-        self._age = self.face["age"]
+        #self._gender = self.face["gender"]
+        #self._emotion = self.face["dominant_emotion"]
+        #self._emotion_certainty = str(int(self.face['emotion'][self._emotion])) + '%'
+        # emotions: angry, disgust, fear, happy, sad, surprise, neutral
+        self._emotions = {}
+        for emotion in ['angry', 'fear', 'happy', 'surprise', 'neutral', 'sad']:
+            emotion_certainty = int(self.face['emotion'][emotion])
+            self._emotions[emotion] = emotion_certainty
+
+        #self._age = self.face["age"]
         self._name = None
         self._center = self.get_center(self.x, self.y, self.w, self.h)
         self._haarcascade_id = None
@@ -198,21 +204,21 @@ class AnalyzedFace:
     def center(self):
         return self._center
 
-    @property
-    def gender(self):
-        return self._gender
+    #@property
+    #def gender(self):
+    #    return self._gender
 
     @property
-    def emotion(self):
-        return self._emotion
+    def emotions(self):
+        return self._emotions
 
-    @property
-    def emotion_certainty(self):
-        return self._emotion_certainty
+    #@property
+    #def emotion_certainty(self):
+    #    return self._emotion_certainty
 
-    @property
-    def age(self):
-        return self._age
+    #@property
+    #def age(self):
+    #    return self._age
 
     @staticmethod
     def get_center(x, y, w, h):

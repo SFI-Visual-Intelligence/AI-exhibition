@@ -26,8 +26,8 @@ fh.setLevel(logging.INFO)
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
-reset_time = 4.0 # reset text display time in seconds
-trigger_time = 2.0 # time between 2 analyses
+reset_time = 3.0 # reset text display time in seconds
+trigger_time = 0.0 # time between 2 analyses, with a countdown displayed
 
 # initializing face recognition methods
 face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
