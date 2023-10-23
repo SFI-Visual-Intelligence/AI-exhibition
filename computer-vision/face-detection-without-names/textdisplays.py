@@ -1,3 +1,4 @@
+from re import error
 import cv2
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -10,21 +11,36 @@ def lack_of_face(img, x,y,w,h):
 
 
 def face_estimations(img, face, x, y, w ,h):
-    y_spacing = 30
 
-    bar_xshift = 200
+
+
     bar_length = 100
-    txt_col = (0, 0, 255)
+    txt_col = (255, 0, 255)
+    bar_col = (255, 0, 255)
+
+    max_txt_x = 0
+    max_txt_y = 0
+    for key in face.emotions.keys():
+        size, _ = cv2.getTextSize(f'{key}: ', font, fontsize, 2)
+        x_size, y_size = size
+
+        if x_size > max_txt_x:
+            max_txt_x = x_size
+
+        elif y_size > max_txt_y:
+            max_txt_y = y_size
+
+    y_spacing = int(1.5 * max_txt_y)
+    bar_xshift = int(max_txt_x * 1)
 
     for i, (emotion, val) in enumerate(face.emotions.items()):
         y_shift = (i+1) * y_spacing * fontsize
         scale_val = val / 100
         bar_xstretch = int(scale_val * bar_length)
-        cv2.putText(img, f'{emotion}: {val}', (x + w, y+y_shift), font, fontsize, txt_col, 2)
-        cv2.rectangle(img, (x+w+bar_xshift, y+y_shift), (x+w+bar_xshift+bar_xstretch, y+y_shift+20), color=(0,0, 255), thickness=-1)
-        cv2.rectangle(img, (x+w+bar_xshift, y+y_shift), (x+w+bar_xshift+bar_length, y+y_shift+20), color=(0,0, 0), thickness=4)
+        cv2.putText(img, f'{emotion}: ', (x + w, y+y_shift), font, fontsize, bar_col, 2)
+        cv2.rectangle(img, (x+w+bar_xshift, y+y_shift-max_txt_y), (x+w+bar_xshift+bar_xstretch, y+y_shift), color=bar_col, thickness=-1)
+        cv2.rectangle(img, (x+w+bar_xshift, y+y_shift-max_txt_y), (x+w+bar_xshift+bar_length, y+y_shift), color=(0,0, 0), thickness=4)
 
-    cv2.rectangle(img, (50, 50), (100, 150), color=(0,0, 255), thickness=-1)
     return img
 
 
