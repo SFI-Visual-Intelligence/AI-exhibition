@@ -1,4 +1,3 @@
-from re import error
 import cv2
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -12,7 +11,7 @@ def lack_of_face(img, x,y,w,h):
 
 def face_estimations(img, face, x, y, w ,h):
 
-    txt_col = (255, 0, 255)
+    txt_col = (0, 0, 0)
     bar_col = (255, 0, 255)
 
     max_txt_x = 0
@@ -29,15 +28,15 @@ def face_estimations(img, face, x, y, w ,h):
 
     y_spacing = int(1.5 * max_txt_y)
     bar_xshift = int(max_txt_x * 1)
-    bar_length = int(4 / 5 * bar_xshift)
+    bar_length = int(w - bar_xshift)
 
     for i, (emotion, val) in enumerate(face.emotions.items()):
         y_shift = (i+1) * y_spacing * fontsize
         scale_val = val / 100
         bar_xstretch = int(scale_val * bar_length)
-        cv2.putText(img, f'{emotion}: ', (x + w, y+y_shift), font, fontsize, bar_col, 2)
-        cv2.rectangle(img, (x+w+bar_xshift, y+y_shift-max_txt_y), (x+w+bar_xshift+bar_xstretch, y+y_shift), color=bar_col, thickness=-1)
-        cv2.rectangle(img, (x+w+bar_xshift, y+y_shift-max_txt_y), (x+w+bar_xshift+bar_length, y+y_shift), color=(0,0, 0), thickness=4)
+        cv2.putText(img, f'{emotion}: ', (x, y-y_shift), font, fontsize, txt_col, 2)
+        cv2.rectangle(img, (x+bar_xshift, y-y_shift-max_txt_y), (x+bar_xshift+bar_xstretch, y-y_shift), color=bar_col, thickness=-1)
+        cv2.rectangle(img, (x+bar_xshift, y-y_shift-max_txt_y), (x+bar_xshift+bar_length, y-y_shift), color=(0,0, 0), thickness=4)
 
     return img
 
