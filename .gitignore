@@ -4,3 +4,4 @@ art-drawing/Toon-Me/*.pkl
 __pycache__/
 computer-vision/dataset/*
 .DS_STORE
+computer-vision/face-detection-without-names/analysis.log
