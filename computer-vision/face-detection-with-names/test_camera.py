@@ -28,4 +28,4 @@ def test_webcam(mirror=False, width=600, height=600):
     
 if __name__ == "__main__":
     # Display the camera on the screen
-    test_webcam()
+    test_webcam(True, 1920, 1080)
