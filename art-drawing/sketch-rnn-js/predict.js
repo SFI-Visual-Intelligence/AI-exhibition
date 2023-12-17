@@ -138,7 +138,9 @@ var sketch = function( p ) {
   var large_class_list = ['ant',
           'bird',
           'mosquito',
-          'yoga'];
+          'yoga', 
+          'bicycle',
+          'truck'];
   // var large_class_list = ['ant',
   //   'ambulance',
   //   'angel',
@@ -370,12 +372,28 @@ var sketch = function( p ) {
     random_model_button.mousePressed(random_model_button_event); // attach button listener
 
     // model selection
-    model_sel = p.createSelect();
-    model_sel.position(195, screen_height-27-27);
+    var draw_name, draw_button_shift, draw_button_position;
+    var longest_draw_name = 0;
+    var font_scale = 8;
+    const potential_draw_button_list = [];
+
     for (var i=0;i<class_list.length;i++) {
-      model_sel.option(class_list[i]);
+      if (class_list[i].length > longest_draw_name){
+        longest_draw_name = class_list[i].length;
+      }
     }
-    model_sel.changed(model_sel_event);
+    draw_button_position = 200;
+    draw_button_shift = 80;
+    for (var i=0;i<class_list.length;i++) {
+
+      draw_name = class_list[i];
+      
+      potential_draw_button_list[i] = p.createButton(draw_name, draw_name);
+      potential_draw_button_list[i].position(draw_button_position, screen_height-27-27);
+      potential_draw_button_list[i].size(longest_draw_name * font_scale);
+      potential_draw_button_list[i].mousePressed(model_sel_event_wrapper);
+      draw_button_position += (draw_button_shift + longest_draw_name);
+    }
 
     // temp
     temperature_slider = p.createSlider(1, 100, temperature*100);
@@ -624,7 +642,7 @@ var sketch = function( p ) {
   };
 
   var model_sel_event = function() {
-    var c = model_sel.value();
+    var c = model_sel;
     var model_mode = "gen";
     console.log("user wants to change to model "+c);
     var call_back = function(new_model) {
@@ -643,6 +661,13 @@ var sketch = function( p ) {
     var item = class_list[Math.floor(Math.random()*class_list.length)];
     model_sel.value(item);
     model_sel_event();
+  };
+
+  var model_sel_event_wrapper = function() {
+    
+    model_sel = this.value();
+    model_sel_event();
+    reset_button_event();
   };
 
   var reset_button_event = function() {
