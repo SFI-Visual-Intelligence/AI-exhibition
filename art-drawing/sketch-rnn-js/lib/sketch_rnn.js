@@ -21,7 +21,8 @@
  * Location of JSON models used for sketch-rnn-js
  */
 var SketchRNNConfig = {
-  BaseURL: "https://storage.googleapis.com/quickdraw-models/sketchRNN/models/"
+  //BaseURL: "https://storage.googleapis.com/quickdraw-models/sketchRNN/models/"
+  BaseURL: "dataset/"
 };
 
 /**
@@ -263,6 +264,7 @@ var ModelImporter = {};
   /**
    * load a given JSON model file dynamically
    */
+  /*
   function loadJSON(filename, callback) {
     var xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
@@ -277,6 +279,14 @@ var ModelImporter = {};
     };
     xobj.send(null);
   }
+  */
+  function loadJSON(filename, callback) {
+    fetch(filename)
+        .then((res) => {
+        return res.json();
+    })
+    .then((data) => callback(data));
+  }
 
   // settings
   var init_model_data;
@@ -288,7 +298,9 @@ var ModelImporter = {};
    * must do this at the beginning.
    */
   var set_init_model = function(model_raw_data) {
+  
     init_model_data = JSON.parse(model_raw_data);
+
     model_data_archive[init_model_data[0].name+"_"+init_model_data[0].mode] = model_raw_data;
   };
 
@@ -315,7 +327,7 @@ var ModelImporter = {};
       console.log("attempting to load "+model_name);
       if (model_data_archive[model_name]) {
         console.log("changing with cached "+model_name);
-        var new_model = new SketchRNN(JSON.parse(model_data_archive[model_name]));
+        var new_model = new SketchRNN(model_data_archive[model_name]);
         if (call_back) {
           call_back(new_model);
         }
@@ -332,10 +344,16 @@ var ModelImporter = {};
           }
         }
         console.log("loading "+model_name+" dynamically");
+        console.log('----inside----');
+        console.log(model_url);
+        console.log(model_name);
+
+        console.log('--end inside--');
+
         loadJSON(model_url+model_name+'.json', function(response) {
           console.log("callback from json load");
           // Parse JSON string into object
-          var result = JSON.parse(response);
+          var result = response//JSON.parse(response);
           if (cache_model_mode) {
             console.log("caching the model.");
             model_data_archive[model_name] = response; // cache it

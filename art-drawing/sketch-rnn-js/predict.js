@@ -21,689 +21,719 @@
 var sketch = function( p ) { 
   "use strict";
 
-  var small_class_list = ['ant',
-    'antyoga',
-    'alarm_clock',
-    'ambulance',
-    'angel',
-    'backpack',
-    'barn',
-    'basket',
-    'bear',
-    'bee',
-    'beeflower',
-    'bicycle',
-    'bird',
-    'book',
-    'brain',
-    'bridge',
-    'bulldozer',
-    'bus',
-    'butterfly',
-    'cactus',
-    'calendar',
-    'castle',
-    'cat',
-    'catbus',
-    'catpig',
-    'chair',
-    'couch',
-    'crab',
-    'crabchair',
-    'crabrabbitfacepig',
-    'cruise_ship',
-    'diving_board',
-    'dog',
-    'dogbunny',
-    'dolphin',
-    'duck',
-    'elephant',
-    'elephantpig',
-    'eye',
-    'face',
-    'fan',
-    'fire_hydrant',
-    'firetruck',
-    'flamingo',
-    'flower',
-    'floweryoga',
-    'frog',
-    'frogsofa',
-    'garden',
-    'hand',
-    'hedgeberry',
-    'hedgehog',
-    'helicopter',
-    'kangaroo',
-    'key',
-    'lantern',
-    'lighthouse',
-    'lion',
-    'lionsheep',
-    'lobster',
-    'map',
-    'mermaid',
-    'monapassport',
-    'monkey',
-    'mosquito',
-    'octopus',
-    'owl',
-    'paintbrush',
-    'palm_tree',
-    'parrot',
-    'passport',
-    'peas',
-    'penguin',
-    'pig',
-    'pigsheep',
-    'pineapple',
-    'pool',
-    'postcard',
-    'power_outlet',
-    'rabbit',
-    'rabbitturtle',
-    'radio',
-    'radioface',
-    'rain',
-    'rhinoceros',
-    'rifle',
-    'roller_coaster',
-    'sandwich',
-    'scorpion',
-    'sea_turtle',
-    'sheep',
-    'skull',
-    'snail',
-    'snowflake',
-    'speedboat',
-    'spider',
-    'squirrel',
-    'steak',
-    'stove',
-    'strawberry',
-    'swan',
-    'swing_set',
-    'the_mona_lisa',
-    'tiger',
-    'toothbrush',
-    'toothpaste',
-    'tractor',
-    'trombone',
-    'truck',
-    'whale',
-    'windmill',
-    'yoga',
-    'yogabicycle'];
+  // params
+  const params = initialise_param_object();
+  // tracking mouse  touchpad
+  const tracking = {
+    down: false,
+    x: 0,
+    y: 0
+  };  
 
-  var large_class_list = ['ant',
+  let line_x = 0;
+  var start, end, delta_time;
+  
+  //
+
+  p.setup = function() {
+
+    init_model(params, model_raw_data);
+    init_screen_size(p, params);
+
+    draw_gui(p, params);
+    restart(p, params);
+    p.createCanvas(params.screen_width, params.screen_height);
+    p.frameRate(60);
+    //clear_screen(p);
+    console.log('ready.');
+    
+  };
+
+
+  p.draw = function() {
+
+    draw_the_stuff(p, params, tracking);
+      /*
+      p.background(204);
+      line_x = line_x + 1;
+      if (line_x > p.width) {
+        line_x = 0;
+      }
+      p.line(line_x, 0, line_x, p.height)
+      */
+  }
+  
+};
+
+  
+var custom_p5 = new p5(sketch, 'sketch');
+
+
+
+function initialise_param_object(){
+  const params = new Object();
+
+  params.class_list = ['truck',
           'bird',
           'mosquito',
           'yoga', 
           'bicycle',
-          'truck'];
-  // var large_class_list = ['ant',
-  //   'ambulance',
-  //   'angel',
-  //   'alarm_clock',
-  //   'antyoga',
-  //   'backpack',
-  //   'barn',
-  //   'basket',
-  //   'bear',
-  //   'bee',
-  //   'beeflower',
-  //   'bicycle',
-  //   'bird',
-  //   'book',
-  //   'brain',
-  //   'bridge',
-  //   'bulldozer',
-  //   'bus',
-  //   'butterfly',
-  //   'cactus',
-  //   'calendar',
-  //   'castle',
-  //   'cat',
-  //   'catbus',
-  //   'catpig',
-  //   'chair',
-  //   'couch',
-  //   'crab',
-  //   'crabchair',
-  //   'crabrabbitfacepig',
-  //   'cruise_ship',
-  //   'diving_board',
-  //   'dog',
-  //   'dogbunny',
-  //   'dolphin',
-  //   'duck',
-  //   'elephant',
-  //   'elephantpig',
-  //   'everything',
-  //   'eye',
-  //   'face',
-  //   'fan',
-  //   'fire_hydrant',
-  //   'firetruck',
-  //   'flamingo',
-  //   'flower',
-  //   'floweryoga',
-  //   'frog',
-  //   'frogsofa',
-  //   'garden',
-  //   'hand',
-  //   'hedgeberry',
-  //   'hedgehog',
-  //   'helicopter',
-  //   'kangaroo',
-  //   'key',
-  //   'lantern',
-  //   'lighthouse',
-  //   'lion',
-  //   'lionsheep',
-  //   'lobster',
-  //   'map',
-  //   'mermaid',
-  //   'monapassport',
-  //   'monkey',
-  //   'mosquito',
-  //   'octopus',
-  //   'owl',
-  //   'paintbrush',
-  //   'palm_tree',
-  //   'parrot',
-  //   'passport',
-  //   'peas',
-  //   'penguin',
-  //   'pig',
-  //   'pigsheep',
-  //   'pineapple',
-  //   'pool',
-  //   'postcard',
-  //   'power_outlet',
-  //   'rabbit',
-  //   'rabbitturtle',
-  //   'radio',
-  //   'radioface',
-  //   'rain',
-  //   'rhinoceros',
-  //   'rifle',
-  //   'roller_coaster',
-  //   'sandwich',
-  //   'scorpion',
-  //   'sea_turtle',
-  //   'sheep',
-  //   'skull',
-  //   'snail',
-  //   'snowflake',
-  //   'speedboat',
-  //   'spider',
-  //   'squirrel',
-  //   'steak',
-  //   'stove',
-  //   'strawberry',
-  //   'swan',
-  //   'swing_set',
-  //   'the_mona_lisa',
-  //   'tiger',
-  //   'toothbrush',
-  //   'toothpaste',
-  //   'tractor',
-  //   'trombone',
-  //   'truck',
-  //   'whale',
-  //   'windmill',
-  //   'yoga',
-  //   'yogabicycle'];
+          'ant'];
 
-  var use_large_models = true;
+  // Finished drawing delay
+  params.clear_delay = 1000;
+  params.timer = null;
 
-  var class_list = small_class_list;
-
-  if (use_large_models) {
-    class_list = large_class_list;
-  }
+  // local-datasets relpath
+  params.model_param_path = "./dataset/";
 
   // sketch_rnn model
-  var model;
-  var model_data;
-  var temperature = 0.25;
-  var min_sequence_length = 5;
+  params.model = null;
+  params.model_data = null;
+  params.temperature = 0.25;
+  params.min_sequence_length = 5;
 
-  var model_pdf; // store all the parameters of a mixture-density distribution
-  var model_state, model_state_orig;
-  var model_prev_pen;
-  var model_dx, model_dy;
-  var model_pen_down, model_pen_up, model_pen_end;
-  var model_x, model_y;
-  var model_is_active;
+  params.model_pdf = null; // store all the parameters of a mixture-density distribution
+  params.model_state = null;
+  params.model_state_orig = null;
+  params.model_prev_pen = null;
+  params.model_dx = null;
+  params.model_dy = null;
+  params.model_pen_down = null; 
+  params.model_pen_up = null;
+  params.model_pen_end = null;
+  params.model_x = null;
+  params.model_y = null;
+  params.model_is_active = null;
 
   // variables for the sketch input interface.
-  var pen;
-  var prev_pen;
-  var x, y; // absolute coordinates on the screen of where the pen is
-  var start_x, start_y;
-  var has_started; // set to true after user starts writing.
-  var just_finished_line;
-  var epsilon = 2.0; // to ignore data from user's pen staying in one spot.
-  var raw_lines;
-  var current_raw_line;
-  var strokes;
-  var line_color, predict_line_color;
+  params.pen = null;
+  params.prev_pen = null;
+  params.x = null 
+  params.y = null; // absolute coordinates on the screen of where the pen is
+  params.start_x = null;
+  params.start_y = null;
+  params.has_started = null; // set to true after user starts writing.
+  params.just_finished_line = null;
+  params.epsilon = 2.0; // to ignore data from user's pen staying in one spot.
+  params.raw_lines = null;
+  params.current_raw_line = null;
+  params.strokes = null;
+  params.line_color = null;
+  params.predict_line_color = null;
 
   // UI
-  var screen_width, screen_height, temperature_slider;
-  var line_width = 2.0;
-  var screen_scale_factor = 3.0;
+  params.screen_width = null;
+  params.screen_height = null;
+  params.temperature_slider = null;
+  params.line_width = 2.0;
+  params.screen_scale_factor = 3.0;
 
   // dom
-  var reset_button, model_sel, random_model_button;
-  var text_title, text_temperature;
+  params.reset_button = null;
+  params.model_sel = null;
+  params.random_model_button = null;
+  params.text_title = null;
+  params.text_temperature = null;
 
-  var title_text = "sketch-rnn predictor.";
+  // model selection
+  params.font_scale = 8;
+  params.potential_draw_button_list = [];
 
-  var set_title_text = function(new_text) {
-    title_text = new_text.split('_').join(' ');
-    text_title.html(title_text);
-    text_title.position(screen_width/2-12*title_text.length/2+10, 0);
+  params.title_text = "sketch-rnn predictor.";
+
+
+  return params;
+};
+
+
+/*
+ *
+ *
+ * BEGIN INIT FUNCTIONS
+ *
+ *
+*/
+
+
+function init_model(params, initial_model_raw_data){
+  ModelImporter.set_init_model(initial_model_raw_data);
+  ModelImporter.set_model_url(params.model_param_path);
+
+
+  params.model_data = ModelImporter.get_model_data();
+  params.model = new SketchRNN(params.model_data);
+  params.model.set_pixel_factor(params.screen_scale_factor); 
+}
+
+
+function init_screen_size(p, params){
+  params.screen_width = p.windowWidth; 
+  params.screen_height = p.windowHeight;
+}
+
+
+
+/*
+ *
+ *
+ * END INIT FUNCTIONS
+ *
+ *
+*/
+
+
+/*
+ *
+ *
+ * BEGIN GUI FUNCTIONS
+ *
+ *
+*/
+
+
+function set_title_text(params, new_text) {
+  params.title_text = new_text.split('_').join(' ');
+  params.text_title.html(params.title_text);
+
+  params.text_title.position(params.screen_width/2-12* params.title_text.length/2+10, 0);
+};
+
+var update_temperature_text = function(params) {
+    var the_color="rgba("+Math.round(255*params.temperature)+",0,"+255+",1)";
+    params.text_temperature.style("color", the_color); // ff990a
+    params.text_temperature.html(""+Math.round(params.temperature*100));
   };
 
-  var update_temperature_text = function() {
-    var the_color="rgba("+Math.round(255*temperature)+",0,"+255+",1)";
-    text_temperature.style("color", the_color); // ff990a
-    text_temperature.html(""+Math.round(temperature*100));
-  };
 
-  var draw_example = function(example, start_x, start_y, line_color) {
-    var i;
-    var x=start_x, y=start_y;
-    var dx, dy;
-    var pen_down, pen_up, pen_end;
-    var prev_pen = [1, 0, 0];
+function draw_gui(p, params){
+  // title
+  params.text_title = p.createP(params.title_text);
+  params.text_title.style("font-family", "Courier New");
+  params.text_title.style("font-size", "20");
+  params.text_title.style("color", "#3393d1"); // ff990a
+  set_title_text(params, params.title_text);
 
-    for(i=0;i<example.length;i++) {
-      // sample the next pen's states from our probability distribution
-      [dx, dy, pen_down, pen_up, pen_end] = example[i];
+  // temperature text
+  params.text_temperature = p.createP();
+  params.text_temperature.style("font-family", "Courier New");
+  params.text_temperature.style("font-size", "16");
+  params.text_temperature.position(params.screen_width-40, params.screen_height-64);
 
-      if (prev_pen[2] == 1) { // end of drawing.
-        break;
-      }
+  update_temperature_text(params);
 
-      // only draw on the paper if the pen is touching the paper
-      if (prev_pen[0] == 1) {
-        p.stroke(line_color);
-        p.strokeWeight(line_width);
-        p.line(x, y, x+dx, y+dy); // draw line connecting prev point to current point.
-      }
+  //buttons
+  generate_buttons(p, params);
+};
 
-      // update the absolute coordinates from the offsets
-      x += dx;
-      y += dy;
 
-      // update the previous pen's state to the current one we just sampled
-      prev_pen = [pen_down, pen_up, pen_end];
-    }
+function generate_buttons(p, params){
 
-  };
-
-  var init = function() {
-
-    // model
-    ModelImporter.set_init_model(model_raw_data);
-    if (use_large_models) {
-      ModelImporter.set_model_url("https://storage.googleapis.com/quickdraw-models/sketchRNN/large_models/");      
-    }
-    model_data = ModelImporter.get_model_data();
-    model = new SketchRNN(model_data);
-    model.set_pixel_factor(screen_scale_factor);
-
-    screen_width = p.windowWidth; //window.innerWidth
-    screen_height = p.windowHeight; //window.innerHeight
-
-    // dom
-
-    reset_button = p.createButton('clear drawing');
-    reset_button.position(10, screen_height-27-27);
-    reset_button.mousePressed(reset_button_event); // attach button listener
-
-    // random model buttom
-    random_model_button = p.createButton('random');
-    random_model_button.position(117, screen_height-27-27);
-    random_model_button.mousePressed(random_model_button_event); // attach button listener
-
-    // model selection
-    var draw_name, draw_button_shift, draw_button_position;
-    var longest_draw_name = 0;
-    var font_scale = 8;
-    const potential_draw_button_list = [];
-
-    for (var i=0;i<class_list.length;i++) {
-      if (class_list[i].length > longest_draw_name){
-        longest_draw_name = class_list[i].length;
-      }
-    }
-    draw_button_position = 200;
-    draw_button_shift = 80;
-    for (var i=0;i<class_list.length;i++) {
-
-      draw_name = class_list[i];
-      
-      potential_draw_button_list[i] = p.createButton(draw_name, draw_name);
-      potential_draw_button_list[i].position(draw_button_position, screen_height-27-27);
-      potential_draw_button_list[i].size(longest_draw_name * font_scale);
-      potential_draw_button_list[i].mousePressed(model_sel_event_wrapper);
-      draw_button_position += (draw_button_shift + longest_draw_name);
-    }
-
-    // temp
-    temperature_slider = p.createSlider(1, 100, temperature*100);
-    temperature_slider.position(0*screen_width/2-10*0+10, screen_height-27);
-    temperature_slider.style('width', screen_width/1-25+'px');
-    temperature_slider.changed(temperature_slider_event);
-
-    // title
-    text_title = p.createP(title_text);
-    text_title.style("font-family", "Courier New");
-    text_title.style("font-size", "20");
-    text_title.style("color", "#3393d1"); // ff990a
-    set_title_text(title_text);
-
-    // temperature text
-    text_temperature = p.createP();
-    text_temperature.style("font-family", "Courier New");
-    text_temperature.style("font-size", "16");
-    text_temperature.position(screen_width-40, screen_height-64);
-    update_temperature_text(title_text);
-
-  };
-
-  var encode_strokes = function(sequence) {
-
-    model_state_orig = model.zero_state();
-
-    if (sequence.length <= min_sequence_length) {
-      return;
-    }
-
-    // encode sequence
-    model_state_orig = model.update(model.zero_input(), model_state_orig);
-    for (var i=0;i<sequence.length-1;i++) {
-      model_state_orig = model.update(sequence[i], model_state_orig);
-    }
-
-    restart_model(sequence);
-
-    model_is_active = true;
-
-  }
-
-  var restart_model = function(sequence) {
-
-    model_state = model.copy_state(model_state_orig); // bounded
-
-    var idx = raw_lines.length-1;
-    var last_point = raw_lines[idx][raw_lines[idx].length-1];
-    var last_x = last_point[0];
-    var last_y = last_point[1];
-
-    // individual models:
-    var sx = last_x;
-    var sy = last_y;
-
-    var dx, dy, pen_down, pen_up, pen_end;
-    var s = sequence[sequence.length-1];
-
-    model_x = sx;
-    model_y = sy;
-
-    dx = s[0];
-    dy = s[1];
-    pen_down = s[2];
-    pen_up = s[3];
-    pen_end = s[4];
-
-    model_dx = dx;
-    model_dy = dy;
-    model_prev_pen = [pen_down, pen_up, pen_end];
-
-  }
-
-  var restart = function() {
-
-    // reinitialize variables before calling p5.js setup.
-    line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
-    predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
-
-    // make sure we enforce some minimum size of our demo
-    screen_width = Math.max(window.innerWidth, 480);
-    screen_height = Math.max(window.innerHeight, 320);
-
-    // variables for the sketch input interface.
-    pen = 0;
-    prev_pen = 1;
-    has_started = false; // set to true after user starts writing.
-    just_finished_line = false;
-    raw_lines = [];
-    current_raw_line = [];
-    strokes = [];
-    // start drawing from somewhere in middle of the canvas
-    x = screen_width/2.0;
-    y = screen_height/2.0;
-    start_x = x;
-    start_y = y;
-    has_started = false;
-
-    model_x = x;
-    model_y = y;
-    model_prev_pen = [0, 1, 0];
-    model_is_active = false;
-
-  };
-
-  var clear_screen = function() {
-    p.background(255, 255, 255, 255);
-    p.fill(255, 255, 255, 255);
-  };
-
-  p.setup = function() {
-    init();
-    restart();
-    p.createCanvas(screen_width, screen_height);
-    p.frameRate(60);
-    clear_screen();
-    console.log('ready.');
-  };
-
-  // tracking mouse  touchpad
-  var tracking = {
-    down: false,
-    x: 0,
-    y: 0
-  };
-
-  p.draw = function() {
-    deviceEvent();
-    // record pen drawing from user:
-    if (tracking.down && (tracking.x > 0) && tracking.y < (screen_height-60)) { // pen is touching the paper
-      if (has_started == false) { // first time anything is written
-        has_started = true;
-        x = tracking.x;
-        y = tracking.y;
-        start_x = x;
-        start_y = y;
-        pen = 0;
-      }
-      var dx0 = tracking.x-x; // candidate for dx
-      var dy0 = tracking.y-y; // candidate for dy
-      if (dx0*dx0+dy0*dy0 > epsilon*epsilon) { // only if pen is not in same area
-        var dx = dx0;
-        var dy = dy0;
-        pen = 0;
-
-        if (prev_pen == 0) {
-          p.stroke(line_color);
-          p.strokeWeight(line_width); // nice thick line
-          p.line(x, y, x+dx, y+dy); // draw line connecting prev point to current point.
-        }
-
-        // update the absolute coordinates from the offsets
-        x += dx;
-        y += dy;
-
-        // update raw_lines
-        current_raw_line.push([x, y]);
-        just_finished_line = true;
-
-        // using the previous pen states, and hidden state, get next hidden state 
-        // update_rnn_state();
-      }
-    } else { // pen is above the paper
-      pen = 1;
-      if (just_finished_line) {
-        var current_raw_line_simple = DataTool.simplify_line(current_raw_line);
-        var idx, last_point, last_x, last_y;
-
-        if (current_raw_line_simple.length > 1) {
-          if (raw_lines.length === 0) {
-            last_x = start_x;
-            last_y = start_y;
-          } else {
-            idx = raw_lines.length-1;
-            last_point = raw_lines[idx][raw_lines[idx].length-1];
-            last_x = last_point[0];
-            last_y = last_point[1];
-          }
-          var stroke = DataTool.line_to_stroke(current_raw_line_simple, [last_x, last_y]);
-          raw_lines.push(current_raw_line_simple);
-          strokes = strokes.concat(stroke);
-
-          // initialize rnn:
-          encode_strokes(strokes);
-
-          // redraw simplified strokes
-          clear_screen();
-          draw_example(strokes, start_x, start_y, line_color);
-
-          /*
-          p.stroke(line_color);
-          p.strokeWeight(2.0);
-          p.ellipse(x, y, 5, 5); // draw line connecting prev point to current point.
-          */
-
-        } else {
-          if (raw_lines.length === 0) {
-            has_started = false;
-          }
-        }
-
-        current_raw_line = [];
-        just_finished_line = false;
-      }
-
-      // have machine take over the drawing here:
-      if (model_is_active) {
-
-        model_pen_down = model_prev_pen[0];
-        model_pen_up = model_prev_pen[1];
-        model_pen_end = model_prev_pen[2];
-
-        model_state = model.update([model_dx, model_dy, model_pen_down, model_pen_up, model_pen_end], model_state);
-        model_pdf = model.get_pdf(model_state);
-        [model_dx, model_dy, model_pen_down, model_pen_up, model_pen_end] = model.sample(model_pdf, temperature);
-
-        if (model_pen_end === 1) {
-          restart_model(strokes);
-          //model_pen_end = 0;
-          //model_pen_down = 1;
-          //model_pen_up = 1;
-          predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
-          clear_screen();
-          draw_example(strokes, start_x, start_y, line_color);
-        } else {
-
-          if (model_prev_pen[0] === 1) {
-
-            // draw line connecting prev point to current point.
-            p.stroke(predict_line_color);
-            p.strokeWeight(line_width);
-            p.line(model_x, model_y, model_x+model_dx, model_y+model_dy);
-          }
-
-          model_prev_pen = [model_pen_down, model_pen_up, model_pen_end];
-
-          model_x += model_dx;
-          model_y += model_dy;
-        }
-      }
-
-    } 
-
-    prev_pen = pen;
-  };
-
-  var model_sel_event = function() {
+  var model_sel_event = function(model_sel) {
     var c = model_sel;
     var model_mode = "gen";
     console.log("user wants to change to model "+c);
     var call_back = function(new_model) {
-      model = new_model;
-      model.set_pixel_factor(screen_scale_factor);
-      encode_strokes(strokes);
-      clear_screen();
-      draw_example(strokes, start_x, start_y, line_color);
-      set_title_text('draw '+model.info.name+'.');
+      params.model = new_model;
+      params.model.set_pixel_factor(params.screen_scale_factor);
+      encode_strokes(p, params, params.strokes);
+      clear_screen(p);
+      draw_example(p, params, params.strokes);
+      set_title_text(params, 'draw '+params.model.info.name+'.');
     }
-    set_title_text('loading '+c+' model...');
-    ModelImporter.change_model(model, c, model_mode, call_back);
+    set_title_text(params, 'loading '+c+' model...');
+    console.log('loading '+c+' model...');
+    ModelImporter.change_model(params.model, c, model_mode, call_back);
   };
 
+
   var random_model_button_event = function() {
-    var item = class_list[Math.floor(Math.random()*class_list.length)];
-    model_sel.value(item);
-    model_sel_event();
+    var item = Math.floor(Math.random() * params.class_list.length);
+    model_sel = params.class_list[item];
+    restart(p, params);
+    model_sel_event(model_sel);
   };
+
+
+  var reset_button_event = function() {
+    restart(p, params);
+    clear_screen(p);
+  };
+
 
   var model_sel_event_wrapper = function() {
     
     model_sel = this.value();
-    model_sel_event();
+    model_sel_event(model_sel);
     reset_button_event();
   };
 
-  var reset_button_event = function() {
-    restart();
-    clear_screen();
-  };
-
   var temperature_slider_event = function() {
-    temperature = temperature_slider.value()/100;
-    clear_screen();
-    draw_example(strokes, start_x, start_y, line_color);
-    update_temperature_text();
+    params.temperature = params.temperature_slider.value()/100;
+    clear_screen(p);
+    //draw_example(params.strokes, params.start_x, params.start_y, params.line_color);
+    update_temperature_text(params);
   };
 
-  var deviceReleased = function() {
-    "use strict";
-    tracking.down = false;
+
+  var longest_draw_name = 0;
+  var draw_name;
+  var draw_button_shift;
+  var draw_button_position;
+
+  reset_button = p.createButton('clear drawing');
+  reset_button.position(10, params.screen_height-27-27);
+  reset_button.mousePressed(reset_button_event); // attach button listener
+
+  // random model buttom
+  random_model_button = p.createButton('random');
+  random_model_button.position(117, params.screen_height-27-27);
+  random_model_button.mousePressed(random_model_button_event); // attach button listener
+
+
+
+  for (var i=0;i<params.class_list.length;i++) {
+    if (params.class_list[i].length > longest_draw_name){
+      longest_draw_name = params.class_list[i].length;
+    }
+  }
+  draw_button_position = 200;
+  draw_button_shift = 80;
+  for (var i=0;i<params.class_list.length;i++) {
+
+    draw_name = params.class_list[i];
+    
+    params.potential_draw_button_list[i] = p.createButton(draw_name, draw_name);
+    params.potential_draw_button_list[i].position(draw_button_position, params.screen_height-27-27);
+    params.potential_draw_button_list[i].size(longest_draw_name * params.font_scale);
+    params.potential_draw_button_list[i].mousePressed(model_sel_event_wrapper);
+    draw_button_position += (draw_button_shift + longest_draw_name);
   }
 
-  var devicePressed = function(x, y) {
-    if (y < (screen_height-60)) {
-      tracking.x = x;
-      tracking.y = y;
-      if (!tracking.down) {
-        tracking.down = true;
-      }
-    }
-  };
+  // temp
+  params.temperature_slider = p.createSlider(1, 100, params.temperature*100);
+  params.temperature_slider.position(0*params.screen_width/2-10*0+10, params.screen_height-27);
+  params.temperature_slider.style('width', params.screen_width/1-25+'px');
+  params.temperature_slider.changed(temperature_slider_event);
 
-  var deviceEvent = function() {
-    if (p.mouseIsPressed) {
-      devicePressed(p.mouseX, p.mouseY);
-    } else {
-      deviceReleased();
+};
+
+
+/*
+ *
+ *
+ * END GUI FUNCTIONS
+ *
+ *
+*/
+
+
+/*
+ *
+ *
+ * BEGIN DRAWING FUNCTIONS
+ *
+ *
+*/
+
+
+function encode_strokes(p, params, sequence){
+  params.model_state_orig = params.model.zero_state();
+
+  if (sequence.length <= params.min_sequence_length) {
+      return;
     }
+
+  params.model_state_orig = params.model.update(params.model.zero_input(), params.model_state_orig);
+
+  for (var i=0; i<sequence.length-1; i++){
+    params.model_state_orig = params.model.update(sequence[i], params.model_state_orig);
+  }
+
+  restart_model(p, params, sequence);
+
+  params.model_is_active = true;
+}
+
+
+function draw_example(p, params, example_strokes){
+  var i;
+  var x, y;
+  var dx, dy;
+  var pen_down, pen_up, pen_end;
+  var prev_pen = [1, 0, 0];
+
+  x = params.start_x;
+  y = params.start_y;
+
+  for(i=0; i<example_strokes.length; i++){
+    // sample the next pen's states from our probability distribution
+    [dx, dy, pen_down, pen_up, pen_end] = example_strokes[i];
+
+    // end of drawing.
+    if (prev_pen[2] == 1) { 
+        break;
+    }
+
+    // only draw on the paper if the pen is touching the paper
+    if (prev_pen[0] == 1) {
+      p.stroke(params.line_color);
+      p.strokeWeight(params.line_width);
+      p.line(x, y, x+dx, y+dy); // draw line connecting prev point to current point.
+    }
+
+    // update the absolute coordinates from the offsets
+    x += dx;
+    y += dy;
+
+    // update the previous pen's state to the current one we just sampled
+    prev_pen = [pen_down, pen_up, pen_end];
   }
 
 };
-var custom_p5 = new p5(sketch, 'sketch');
+
+
+/*
+ *
+ *
+ * END DRAWING FUNCTIONS
+ *
+ *
+*/
+
+
+
+/*
+ *
+ *
+ * BEGIN RESTART FUNCTIONS
+ *
+ *
+*/
+
+
+function clear_screen(p) {
+  p.background(255, 255, 255, 255);
+  p.fill(255, 255, 255, 255);
+};
+
+
+function restart_model(p, params, sequence){
+  params.model_state = params.model.copy_state(params.model_state_orig);
+
+  var idx = params.raw_lines.length-1;
+  var last_point = params.raw_lines[idx][params.raw_lines[idx].length-1];
+  var last_x = last_point[0];
+  var last_y = last_point[1];
+
+  var sx = last_x;
+  var sy = last_y;
+
+  var dx, dy, pen_down, pen_up, pen_end;
+  var s = sequence[sequence.length-1];
+
+  params.model_x = sx;
+  params.model_y = sy;
+
+  dx = s[0];
+  dy = s[1];
+
+  pen_down = s[2];
+  pen_up = s[3];
+  pen_end = s[4];
+
+  params.model_dx = dx;
+  params.model_dy = dy;
+  params.model_prev_pen = [pen_down, pen_up, pen_end];
+}
+
+
+function restart(p, params){
+    params.line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
+    params.predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
+
+    // make sure we enforce some minimum size of our demo
+    params.screen_width = Math.max(window.innerWidth, 480);
+    params.screen_height = Math.max(window.innerHeight, 320);
+
+    params.pen = 0;
+    params.prev_pen = 1;
+    params.has_started = false; // set to true after user starts writing.
+    params.just_finished_line = false;
+    params.raw_lines = [];
+    params.current_raw_line = [];
+    params.strokes = [];
+    // start drawing from somewhere in middle of the canvas
+    params.x = params.screen_width/2.0;
+    params.y = params.screen_height/2.0;
+    params.start_x = params.x;
+    params.start_y = params.y;
+    params.has_started = false;
+
+    params.model_x = params.x;
+    params.model_y = params.y;
+    params.model_prev_pen = [0, 1, 0];
+    params.model_is_active = false;
+};
+
+
+
+/*
+ *
+ *
+ * END RESTART FUNCTIONS
+ *
+ *
+*/
+
+ 
+
+/*
+ *
+ *
+ * BEGIN FREEZE FINISHED DRAWING FUNCTIONS
+ *
+ *
+*/
+
+var stop_at_finished_drawing = function(p, params) {
+    p.noLoop();
+    params.timer = setTimeout(function() {
+      p.loop();
+      params.timer = null;
+    }, params.clear_delay);
+  };
+
+
+function releaseTimeout(params){
+  if (params.timer != null){
+      clearTimeout(timer);
+      p.loop()
+      params.timer = null;
+    }
+}
+
+
+/*
+ *
+ *
+ * END FREEZE FINISHED DRAWING FUNCTIONS
+ *
+ *
+*/
+
+
+/*
+ *
+ *
+ * BEGIN DEVICE CONTROLLER FUNCTIONS
+ *
+ *
+*/
+
+
+function deviceReleased (tracking) {
+  "use strict";
+  tracking.down = false;
+}
+
+function devicePressed(params, tracking, x, y) {
+  if (y < (params.screen_height-60)) {
+    tracking.x = x;
+    tracking.y = y;
+    if (!tracking.down) {
+      tracking.down = true;
+    }
+  }
+};
+
+function deviceEvent(p, params, tracking) {
+    if (p.mouseIsPressed) {
+      devicePressed(params, tracking, p.mouseX, p.mouseY);
+    } else {
+      deviceReleased(tracking);
+    }
+  }
+
+
+/*
+ *
+ *
+ * END DEVICE CONTROLLER FUNCTIONS
+ *
+ *
+*/
+
+
+/*
+ *
+ *
+ * BEGIN BEGIN DRAW LOOP FUNCTIONS
+ *
+ *
+*/
+
+
+function draw_the_stuff(p, params, tracking){
+  deviceEvent(p, params, tracking);
+  //pen is touching the paper
+  if (tracking.down && (tracking.x > 0) && tracking.y < (params.screen_height-60)) { 
+    record_user_drawing(p, params, tracking);
+  }
+  else{
+    params.pen = 1;
+
+    if (params.just_finished_line){
+      pen_above_paper(p, params, tracking);
+    }
+
+    if (params.model_is_active) {
+      the_model_has_taken_over(p, params);
+    } 
+  }
+  params.prev_pen = params.pen;
+}
+
+function record_user_drawing(p, params, tracking){
+  // Asserting initial drawing
+  if (params.has_started == false){
+    params.has_started = true;
+
+    params.x = tracking.x;
+    params.y = tracking.y;
+
+    params.start_x = params.x;
+    params.start_y = params.y;
+
+    params.pen = 0;
+  }
+  var dx0 = tracking.x - params.x;
+  var dy0 = tracking.y - params.y;
+
+  if (dx0 * dx0 + dy0 * dy0 > params.epsilon * params.epsilon){
+    var dx = dx0;
+    var dy = dy0;
+    params.pen = 0;
+
+    if (params.prev_pen == 0){
+      p.stroke (params.line_color);
+      p.strokeWeight(params.line_width);
+      p.line(params.x, params.y, params.x+dx, params.y+dy);
+
+    }
+
+    // update the absolute coordinates from the offsets
+    params.x += dx;
+    params.y += dy;
+
+    // update raw_lines
+    params.current_raw_line.push([params.x, params.y]);
+    params.just_finished_line = true;
+  }
+}
+
+
+function pen_above_paper(p, params, tracking){ 
+  var current_raw_line_simple = DataTool.simplify_line(params.current_raw_line);
+  var idx, last_point, last_x, last_y;
+
+  if (current_raw_line_simple.length > 1) {
+
+    if (params.raw_lines.length === 0) {
+      last_x = params.start_x;
+      last_y = params.start_y;
+    }
+    else {
+      idx = params.raw_lines.length - 1;
+      last_point = params.raw_lines[idx][params.raw_lines[idx].length-1];
+      last_x = last_point[0];
+      last_y = last_point[1]; 
+    }
+
+    var stroke = DataTool.line_to_stroke(current_raw_line_simple, [last_x, last_y]);
+    params.raw_lines.push(current_raw_line_simple);
+    params.strokes = params.strokes.concat(stroke);
+
+
+    //initialize rnn
+    encode_strokes(p, params, params.strokes);
+
+    // redraw simplified strokes
+    clear_screen(p);
+    draw_example(p, params, params.strokes)
+  }
+  else {
+    if (params.raw_lines.length === 0) {
+      params.has_started = false;
+    }
+  }
+
+  params.current_raw_line = [];
+  params.just_finished_line = false
+}
+
+
+function the_model_has_taken_over(p, params) {
+  params.model_pen_down = params.model_prev_pen[0];
+  params.model_pen_up = params.model_prev_pen[1];
+  params.model_pen_end = params.model_prev_pen[2];
+
+  params.model_state = params.model.update([
+      params.model_dx,
+      params.model_dy,
+      params.model_pen_down,
+      params.model_pen_up,
+      params.model_pen_end],
+      params.model_state
+    );
+
+  params.model_pdf = params.model.get_pdf(params.model_state);
+
+
+  [params.model_dx,
+   params.model_dy,
+   params.model_pen_down,
+   params.model_pen_up,
+   params.model_pen_end] = params.model.sample(params.model_pdf, params.temperature);
+
+  if (params.model_pen_end === 1){
+    restart_model(p, params, params.strokes);
+
+    params.predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
+    clear_screen(p);
+    draw_example(p, params, params.strokes);
+  }
+  else {
+
+    if (params.model_prev_pen[0] === 1) {
+      p.stroke(params.predict_line_color);
+      p.strokeWeight(params.line_width);
+      p.line(
+        params.model_x,
+        params.model_y,
+        params.model_x + params.model_dx,
+        params.model_y + params.model_dy
+        );
+    }
+
+    params.model_prev_pen = [
+      params.model_pen_down,
+      params.model_pen_up,
+      params.model_pen_end
+      ];
+
+    params.model_x += params.model_dx;
+    params.model_y += params.model_dy;
+  }
+}
+
+
+/*
+ *
+ *
+ * END DRAW LOOP FUNCTIONS
+ *
+ *
+*/
+
+
