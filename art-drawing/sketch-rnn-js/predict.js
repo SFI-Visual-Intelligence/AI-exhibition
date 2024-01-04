@@ -200,7 +200,7 @@ function set_title_text(params, new_text) {
   params.title_text = new_text.split('_').join(' ');
   params.text_title.html(params.title_text);
 
-  params.text_title.position(params.screen_width/2-12* params.title_text.length/2+10, 0);
+  params.text_title.position(params.screen_width/2-12* params.title_text.length/2-85, 0);
 };
 
 var update_temperature_text = function(params) {
@@ -213,8 +213,8 @@ var update_temperature_text = function(params) {
 function draw_gui(p, params){
   // title
   params.text_title = p.createP(params.title_text);
-  params.text_title.style("font-family", "Courier New");
-  params.text_title.style("font-size", "20");
+  params.text_title.style("font-family", "Arial Black");
+  params.text_title.style("font-size", "40");
   params.text_title.style("color", "#3393d1"); // ff990a
   set_title_text(params, params.title_text);
 
@@ -420,8 +420,8 @@ function draw_example(p, params, example_strokes){
 
 
 function clear_screen(p) {
-  p.background(50, 50, 50, 255);
-  p.fill(50, 50, 50, 255);
+  p.background(20, 20, 20, 255);
+  p.fill(20, 20, 20, 255);
 };
 
 
@@ -461,7 +461,7 @@ function restart(p, params){
 
     // make sure we enforce some minimum size of our demo
     params.screen_width = 1080;
-    params.screen_height = 1695;
+    params.screen_height = 1565;
 
     params.pen = 0;
     params.prev_pen = 1;
