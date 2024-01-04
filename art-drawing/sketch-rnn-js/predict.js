@@ -73,12 +73,12 @@ var custom_p5 = new p5(sketch, 'sketch');
 function initialise_param_object(){
   const params = new Object();
 
-  params.class_list = ['truck',
-          'bird',
-          'mosquito',
-          'yoga', 
-          'bicycle',
-          'ant'];
+  params.class_list = ['bicycle',
+          'butterfly',
+          'pig',
+          'flower', 
+          'truck',
+          'face'];
 
   // Finished drawing delay
   params.clear_delay = 1000;
@@ -125,14 +125,18 @@ function initialise_param_object(){
   // UI
   params.screen_width = null;
   params.screen_height = null;
+  params.buttonheight = null;
+  params.buttonwidth = null;
   params.temperature_slider = null;
-  params.line_width = 2.0;
+  params.line_width = 12;
   params.screen_scale_factor = 3.0;
 
   // dom
   params.reset_button = null;
   params.model_sel = null;
   params.random_model_button = null;
+  params.button_height = 100;
+  params.button_width = 200;
   params.text_title = null;
   params.text_temperature = null;
 
@@ -168,8 +172,8 @@ function init_model(params, initial_model_raw_data){
 
 
 function init_screen_size(p, params){
-  params.screen_width = p.windowWidth; 
-  params.screen_height = p.windowHeight;
+  params.screen_width = 1080; 
+  params.screen_height = 1920;
 }
 
 
@@ -246,14 +250,14 @@ function generate_buttons(p, params){
     ModelImporter.change_model(params.model, c, model_mode, call_back);
   };
 
-
+/* no random for Unreal GUI
   var random_model_button_event = function() {
     var item = Math.floor(Math.random() * params.class_list.length);
     model_sel = params.class_list[item];
     restart(p, params);
     model_sel_event(model_sel);
   };
-
+*/
 
   var reset_button_event = function() {
     restart(p, params);
@@ -280,15 +284,18 @@ function generate_buttons(p, params){
   var draw_name;
   var draw_button_shift;
   var draw_button_position;
+  var buttonheight = 154;
+  var buttonwidth = 154;
 
   reset_button = p.createButton('clear drawing');
-  reset_button.position(10, params.screen_height-27-27);
+  reset_button.position(25, 1900 - buttonheight*2);
+  reset_button.size(1030, buttonheight);
   reset_button.mousePressed(reset_button_event); // attach button listener
 
   // random model buttom
-  random_model_button = p.createButton('random');
-  random_model_button.position(117, params.screen_height-27-27);
-  random_model_button.mousePressed(random_model_button_event); // attach button listener
+  //random_model_button = p.createButton('random');
+  //random_model_button.position(117, params.screen_height-27-27);
+  //random_model_button.mousePressed(random_model_button_event); // attach button listener
 
 
 
@@ -297,25 +304,25 @@ function generate_buttons(p, params){
       longest_draw_name = params.class_list[i].length;
     }
   }
-  draw_button_position = 200;
-  draw_button_shift = 80;
+  draw_button_position = 27;
+  draw_button_shift = 20;
   for (var i=0;i<params.class_list.length;i++) {
 
     draw_name = params.class_list[i];
     
     params.potential_draw_button_list[i] = p.createButton(draw_name, draw_name);
-    params.potential_draw_button_list[i].position(draw_button_position, params.screen_height-27-27);
-    params.potential_draw_button_list[i].size(longest_draw_name * params.font_scale);
+    params.potential_draw_button_list[i].position(draw_button_position, 1920 - buttonheight);
+    params.potential_draw_button_list[i].size(buttonwidth, buttonheight);
     params.potential_draw_button_list[i].mousePressed(model_sel_event_wrapper);
-    draw_button_position += (draw_button_shift + longest_draw_name);
+    draw_button_position += (draw_button_shift + buttonwidth);
   }
-
+/*
   // temp
   params.temperature_slider = p.createSlider(1, 100, params.temperature*100);
   params.temperature_slider.position(0*params.screen_width/2-10*0+10, params.screen_height-27);
   params.temperature_slider.style('width', params.screen_width/1-25+'px');
   params.temperature_slider.changed(temperature_slider_event);
-
+*/
 };
 
 
@@ -413,8 +420,8 @@ function draw_example(p, params, example_strokes){
 
 
 function clear_screen(p) {
-  p.background(255, 255, 255, 255);
-  p.fill(255, 255, 255, 255);
+  p.background(50, 50, 50, 255);
+  p.fill(50, 50, 50, 255);
 };
 
 
@@ -453,8 +460,8 @@ function restart(p, params){
     params.predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
 
     // make sure we enforce some minimum size of our demo
-    params.screen_width = Math.max(window.innerWidth, 480);
-    params.screen_height = Math.max(window.innerHeight, 320);
+    params.screen_width = 1080;
+    params.screen_height = 1695;
 
     params.pen = 0;
     params.prev_pen = 1;
