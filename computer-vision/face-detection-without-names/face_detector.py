@@ -40,11 +40,14 @@ height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print('Press "esc" key to exit')
 print('Press space bar to compute the values')
 print(f'Camera resolution {width} x {height}')
-zoom = 2
+zoom = 1
+
+screen_w = 1080
+screen_h = 1920
 
 # change the size
-cam.set(3, int(width * zoom)) # set video width
-cam.set(4, int(height * zoom)) # set video height
+cam.set(3, screen_w) # set video width
+cam.set(4, screen_h) # set video height
 
 # initialize timer
 previous = time.time()
@@ -55,7 +58,10 @@ display_val = False
 
 while True:
     ret, img = cam.read()
+    img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) # portrait
+    img = cv2.resize(img, (img.shape[1] * 2, img.shape[0] * 2))
     img = cv2.flip(img, 1) # mirror
+
     #img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
     #img = textdisplays.press_space(img)
 
@@ -105,8 +111,7 @@ while True:
 
 
     #imgS = cv2.resize(img, (width*2, height*2))                # Resize image
-    imgS = img
-    cv2.imshow('Camera',imgS)
+    cv2.imshow('Camera',img)
     
     if buttons.endtest() == True:
         break

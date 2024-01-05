@@ -5,6 +5,6 @@ __pycache__/
 computer-vision/dataset/*
 .DS_STORE
 
-
-test*
-*.log
+test.*
+computer-vision/face-detection-without-names/analysis.log
+computer-vision/face-detection-without-names/deepface
