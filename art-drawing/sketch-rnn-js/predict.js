@@ -13,7 +13,7 @@
 // permissions and limitations under the License.
 /**
  * Author: David Ha <hadavid@google.com>
- *
+ * Code adapted and refactored by: Iver Schei Noerve. <iver@noerve.com>
  * @fileoverview Basic p5.js sketch to show how to use sketch-rnn
  * to finish the user's incomplete drawing, and loop through different
  * endings automatically.
@@ -51,7 +51,6 @@ var sketch = function( p ) {
 
   p.mousePressed = function() {
     releaseTimeout(p, params);
-    console.log('released')
   }
 };
 
@@ -488,7 +487,6 @@ function restart(p, params){
 
 var stop_at_finished_drawing = function(p, params) {
     p.noLoop();
-    alert('frozen 6');
     params.timer = setTimeout(function() {
       clear_screen(p);
       draw_example(p, params, params.strokes);
@@ -501,7 +499,7 @@ var stop_at_finished_drawing = function(p, params) {
 function releaseTimeout(p, params){
   if (params.timer != null){
       clearTimeout(params.timer);
-      p.loop()
+      p.loop();
       clear_screen(p);
       draw_example(p, params, params.strokes);
       params.timer = null;
@@ -544,7 +542,9 @@ function devicePressed(params, tracking, x, y) {
 
 function deviceEvent(p, params, tracking) {
     if (p.mouseIsPressed) {
-      devicePressed(params, tracking, p.mouseX, p.mouseY);
+      if (p.mouseButton === p.LEFT){
+        devicePressed(params, tracking, p.mouseX, p.mouseY);
+      }
     } else {
       deviceReleased(tracking);
     }
