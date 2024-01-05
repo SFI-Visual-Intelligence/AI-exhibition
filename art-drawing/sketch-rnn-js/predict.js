@@ -62,12 +62,12 @@ var custom_p5 = new p5(sketch, 'sketch');
 function initialise_param_object(){
   const params = new Object();
 
-  params.class_list = ['truck',
-          'bird',
-          'mosquito',
-          'yoga', 
-          'bicycle',
-          'ant'];
+  params.class_list = ['bicycle',
+          'butterfly',
+          'pig',
+          'flower', 
+          'truck',
+          'face'];
 
   // Finished drawing delay
   params.clear_delay = 2000;
@@ -115,8 +115,11 @@ function initialise_param_object(){
   params.screen_width = null;
   params.screen_height = null;
   params.temperature_slider = null;
-  params.line_width = 2.0;
+  params.line_width = 12.0;
   params.screen_scale_factor = 3.0;
+
+  params.button_height = 154;
+  params.button_width = 154;
 
   // dom
   params.reset_button = null;
@@ -129,7 +132,7 @@ function initialise_param_object(){
   params.font_scale = 8;
   params.potential_draw_button_list = [];
 
-  params.title_text = "sketch-rnn predictor.";
+  params.title_text = "Draw a bicycle.";
 
 
   return params;
@@ -157,8 +160,8 @@ function init_model(params, initial_model_raw_data){
 
 
 function init_screen_size(p, params){
-  params.screen_width = p.windowWidth; 
-  params.screen_height = p.windowHeight;
+  params.screen_width = 1080; 
+  params.screen_height = 1920;
 }
 
 
@@ -185,7 +188,7 @@ function set_title_text(params, new_text) {
   params.title_text = new_text.split('_').join(' ');
   params.text_title.html(params.title_text);
 
-  params.text_title.position(params.screen_width/2-12* params.title_text.length/2+10, 0);
+  params.text_title.position(params.screen_width/2 - 12 * params.title_text.length/2-85, 0);
 };
 
 var update_temperature_text = function(params) {
@@ -198,8 +201,8 @@ var update_temperature_text = function(params) {
 function draw_gui(p, params){
   // title
   params.text_title = p.createP(params.title_text);
-  params.text_title.style("font-family", "Courier New");
-  params.text_title.style("font-size", "20");
+  params.text_title.style("font-family", "Arial Black");
+  params.text_title.style("font-size", "40");
   params.text_title.style("color", "#3393d1"); // ff990a
   set_title_text(params, params.title_text);
 
@@ -235,15 +238,6 @@ function generate_buttons(p, params){
     ModelImporter.change_model(params.model, c, model_mode, call_back);
   };
 
-
-  var random_model_button_event = function() {
-    var item = Math.floor(Math.random() * params.class_list.length);
-    model_sel = params.class_list[item];
-    restart(p, params);
-    model_sel_event(model_sel);
-  };
-
-
   var reset_button_event = function() {
     restart(p, params);
     clear_screen(p);
@@ -271,40 +265,30 @@ function generate_buttons(p, params){
   var draw_button_position;
 
   reset_button = p.createButton('clear drawing');
-  reset_button.position(10, params.screen_height-27-27);
+  reset_button.position(25, 1900 - params.button_height * 2);
+  reset_button.size(1030, params.button_height);
   reset_button.mousePressed(reset_button_event); // attach button listener
 
-  // random model buttom
-  random_model_button = p.createButton('random');
-  random_model_button.position(117, params.screen_height-27-27);
-  random_model_button.mousePressed(random_model_button_event); // attach button listener
-
-
-
-  for (var i=0;i<params.class_list.length;i++) {
-    if (params.class_list[i].length > longest_draw_name){
-      longest_draw_name = params.class_list[i].length;
-    }
-  }
-  draw_button_position = 200;
-  draw_button_shift = 80;
+  draw_button_position = 27;
+  draw_button_shift = 20;
   for (var i=0;i<params.class_list.length;i++) {
 
     draw_name = params.class_list[i];
     
     params.potential_draw_button_list[i] = p.createButton(draw_name, draw_name);
-    params.potential_draw_button_list[i].position(draw_button_position, params.screen_height-27-27);
-    params.potential_draw_button_list[i].size(longest_draw_name * params.font_scale);
+    params.potential_draw_button_list[i].position(draw_button_position, 1920 - params.button_height);
+    params.potential_draw_button_list[i].size(params.button_width, params.button_height);
     params.potential_draw_button_list[i].mousePressed(model_sel_event_wrapper);
-    draw_button_position += (draw_button_shift + longest_draw_name);
+    draw_button_position += (draw_button_shift + params.button_width);
   }
 
+  /*
   // temp
   params.temperature_slider = p.createSlider(1, 100, params.temperature*100);
   params.temperature_slider.position(0*params.screen_width/2-10*0+10, params.screen_height-27);
   params.temperature_slider.style('width', params.screen_width/1-25+'px');
   params.temperature_slider.changed(temperature_slider_event);
-
+  */
 };
 
 
@@ -402,8 +386,8 @@ function draw_example(p, params, example_strokes){
 
 
 function clear_screen(p) {
-  p.background(255, 255, 255, 255);
-  p.fill(255, 255, 255, 255);
+  p.background(20, 20, 20, 255);
+  p.fill(20, 20, 20, 255);
 };
 
 
@@ -442,8 +426,8 @@ function restart(p, params){
     params.predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
 
     // make sure we enforce some minimum size of our demo
-    params.screen_width = Math.max(window.innerWidth, 480);
-    params.screen_height = Math.max(window.innerHeight, 320);
+    params.screen_width = 1080;
+    params.screen_height = 1565;
 
     params.pen = 0;
     params.prev_pen = 1;
