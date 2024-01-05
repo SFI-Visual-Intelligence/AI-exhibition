@@ -13,7 +13,7 @@
 // permissions and limitations under the License.
 /**
  * Author: David Ha <hadavid@google.com>
- *
+ * Code adapted and refactored by: Iver Schei Noerve. <iver@noerve.com>
  * @fileoverview Basic p5.js sketch to show how to use sketch-rnn
  * to finish the user's incomplete drawing, and loop through different
  * endings automatically.
@@ -28,12 +28,7 @@ var sketch = function( p ) {
     down: false,
     x: 0,
     y: 0
-  };  
-
-  let line_x = 0;
-  var start, end, delta_time;
-  
-  //
+  };
 
   p.setup = function() {
 
@@ -51,18 +46,12 @@ var sketch = function( p ) {
 
 
   p.draw = function() {
-
     draw_the_stuff(p, params, tracking);
-      /*
-      p.background(204);
-      line_x = line_x + 1;
-      if (line_x > p.width) {
-        line_x = 0;
-      }
-      p.line(line_x, 0, line_x, p.height)
-      */
   }
-  
+
+  p.mousePressed = function() {
+    releaseTimeout(p, params);
+  }
 };
 
   
@@ -81,7 +70,7 @@ function initialise_param_object(){
           'face'];
 
   // Finished drawing delay
-  params.clear_delay = 1000;
+  params.clear_delay = 2000;
   params.timer = null;
 
   // local-datasets relpath
@@ -506,16 +495,20 @@ function restart(p, params){
 var stop_at_finished_drawing = function(p, params) {
     p.noLoop();
     params.timer = setTimeout(function() {
+      clear_screen(p);
+      draw_example(p, params, params.strokes);
       p.loop();
       params.timer = null;
     }, params.clear_delay);
   };
 
 
-function releaseTimeout(params){
+function releaseTimeout(p, params){
   if (params.timer != null){
-      clearTimeout(timer);
-      p.loop()
+      clearTimeout(params.timer);
+      p.loop();
+      clear_screen(p);
+      draw_example(p, params, params.strokes);
       params.timer = null;
     }
 }
@@ -556,7 +549,9 @@ function devicePressed(params, tracking, x, y) {
 
 function deviceEvent(p, params, tracking) {
     if (p.mouseIsPressed) {
-      devicePressed(params, tracking, p.mouseX, p.mouseY);
+      if (p.mouseButton === p.LEFT){
+        devicePressed(params, tracking, p.mouseX, p.mouseY);
+      }
     } else {
       deviceReleased(tracking);
     }
@@ -704,11 +699,10 @@ function the_model_has_taken_over(p, params) {
    params.model_pen_end] = params.model.sample(params.model_pdf, params.temperature);
 
   if (params.model_pen_end === 1){
+    
     restart_model(p, params, params.strokes);
-
     params.predict_line_color = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
-    clear_screen(p);
-    draw_example(p, params, params.strokes);
+    stop_at_finished_drawing(p, params);
   }
   else {
 
