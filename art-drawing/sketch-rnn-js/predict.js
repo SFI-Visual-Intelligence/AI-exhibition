@@ -144,7 +144,7 @@ function initialise_param_object(){
   params.font_scale = 8;
   params.potential_draw_button_list = [];
 
-  params.title_text = "sketch-rnn predictor.";
+  params.title_text = "draw a bug.";
 
 
   return params;
