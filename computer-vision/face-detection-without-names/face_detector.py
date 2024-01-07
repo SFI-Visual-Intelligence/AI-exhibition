@@ -35,8 +35,11 @@ face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_front
 
 # Initialize and start realtime video capture
 cam = cv2.VideoCapture(0)# (0) or ("/dev/video0"), usb webcam cam have a higher number
-width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+#for the Unreal UI we will hard set the camera to our known monitor size in portrait mode in order to get full-frame resolution: 1080 x 1920
+width = int(1080)
+height = int(1920)
+#width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+#height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print('Press "esc" key to exit')
 print('Press space bar to compute the values')
 print(f'Camera resolution {width} x {height}')
@@ -56,7 +59,7 @@ display_val = False
 while True:
     ret, img = cam.read()
     img = cv2.flip(img, 1) # mirror
-    #img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
+    img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
     #img = textdisplays.press_space(img)
 
     current = time.time()
