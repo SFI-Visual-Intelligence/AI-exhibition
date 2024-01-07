@@ -10,6 +10,7 @@ def lack_of_face(img, x,y,w,h):
 
 
 def face_estimations(img, face, x, y, w ,h):
+    bar_scale_to_max_txt_size = 1
 
     txt_col = (0, 0, 0)
     bar_col = (255, 0, 255)
@@ -28,7 +29,7 @@ def face_estimations(img, face, x, y, w ,h):
 
     y_spacing = int(1.5 * max_txt_y)
     bar_xshift = int(max_txt_x * 1)
-    bar_length = int(w - bar_xshift)
+    bar_length = int(bar_xshift * bar_scale_to_max_txt_size)
 
     for i, (emotion, val) in enumerate(face.emotions.items()):
         y_shift = (i+1) * y_spacing * fontsize
