@@ -8,3 +8,6 @@ computer-vision/dataset/*
 test.*
 computer-vision/face-detection-without-names/analysis.log
 computer-vision/face-detection-without-names/deepface
+
+test*
+*.log

@@ -159,7 +159,7 @@ class AnalyzedFace:
         #self._emotion_certainty = str(int(self.face['emotion'][self._emotion])) + '%'
         # emotions: angry, disgust, fear, happy, sad, surprise, neutral
         self._emotions = {}
-        for emotion in ['angry', 'fear', 'happy', 'surprise', 'neutral', 'sad']:
+        for emotion in ['surprise', 'angry', 'sad', 'happy']:
             emotion_certainty = int(self.face['emotion'][emotion])
             self._emotions[emotion] = emotion_certainty
 
