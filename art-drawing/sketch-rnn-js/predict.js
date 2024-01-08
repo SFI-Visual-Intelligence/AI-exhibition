@@ -231,10 +231,10 @@ function generate_buttons(p, params){
       encode_strokes(p, params, params.strokes);
       clear_screen(p);
       draw_example(p, params, params.strokes);
-      set_title_text(params, 'draw '+params.model.info.name+'.');
+      set_title_text(params, 'Draw '+params.model.info.name+'.');
     }
-    set_title_text(params, 'loading '+c+' model...');
-    console.log('loading '+c+' model...');
+    set_title_text(params, 'Loading '+c+' model...');
+    console.log('Loading '+c+' model...');
     ModelImporter.change_model(params.model, c, model_mode, call_back);
   };
 
