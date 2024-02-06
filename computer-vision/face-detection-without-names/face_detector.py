@@ -66,8 +66,10 @@ while True:
     delta += current - previous
     previous = current
 
-    faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
-    
+    try:
+        faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
+    except:
+        continue
 
     if len(faces) >=1 and (delta > trigger_time and analyzed == 0):
         print(f'{trigger_time} seconds have passed, running analysis...')
