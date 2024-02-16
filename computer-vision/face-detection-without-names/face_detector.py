@@ -58,27 +58,32 @@ display_val = False
 
 while True:
     ret, img = cam.read()
+    if ret==False: # No image has be read
+        continue
     img = cv2.flip(img, 1) # mirror
     img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # portrait
     #img = textdisplays.press_space(img)
-
-    current = time.time()
-    delta += current - previous
-    previous = current
-
     try:
         faces,gray = detection.get_faces(img, face_detector)    #coordinates for box around detected face
     except:
         continue
+        
+    current = time.time()
+    delta += current - previous
+    previous = current
 
     if len(faces) >=1 and (delta > trigger_time and analyzed == 0):
         print(f'{trigger_time} seconds have passed, running analysis...')
-        display_val = True
-        delta = 0
-        analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion
+        try:
+            analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion
+        except:
+            faces = []
+            continue
         face_analyzed_pos = [face.rect for face in analyzed_faces]
         logger.info(f'{len(analyzed_faces)}')
         analyzed = 1
+        display_val = True
+        delta = 0
     
     if analyzed == 1:        
         matching_faces = detected_face.rectangle_comparison(faces, face_analyzed_pos)
