@@ -75,7 +75,13 @@ while True:
         print(f'{trigger_time} seconds have passed, running analysis...')
         display_val = True
         delta = 0
-        analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion
+        
+        #This line often crashes the program, so we will try to catch the error and continue
+        try:
+            analyzed_faces = detected_face.face_analyzing(img, faces) #estimating age, gender and emotion
+        except:
+            continue
+
         face_analyzed_pos = [face.rect for face in analyzed_faces]
         logger.info(f'{len(analyzed_faces)}')
         analyzed = 1
