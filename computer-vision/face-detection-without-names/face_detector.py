@@ -79,6 +79,7 @@ while True:
         except:
             faces = []
             continue
+            
         face_analyzed_pos = [face.rect for face in analyzed_faces]
         logger.info(f'{len(analyzed_faces)}')
         analyzed = 1
