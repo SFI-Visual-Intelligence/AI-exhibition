@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Draw with artificial intelligence (AI)</title>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #cccaca;
+            margin: 0;
+            padding: 0;
+            text-align: center; /* Center aligns everything in the body */
+        }
+        .banner {
+            width: 50%; /* Adjusted size to 50% */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Makes the img a block element */
+            margin: 0 auto; /* Centers the image horizontally */
+        }
+        .center {
+            margin-top: 20px; /* Adjusted for better spacing */
+        }
+        .instruction-img {
+            width: 80%; /* Adjust size as needed */
+            height: auto;
+            margin: 20px auto; /* Centering the image */
+        }
+        .descriptions {
+            display: flex; /* Using flexbox to layout descriptions */
+            justify-content: space-around; /* Evenly spaces the flex items */
+            max-width: 80%; /* Same width as the instruction image */
+            margin: 0 auto; /* Centering the container */
+        }
+        .description {
+            flex: 1; /* Each description takes equal space */
+            padding: 0 10px; /* Padding for text not to touch each other */
+            text-align: center; /* Center text within each description */
+        }
+        .lang-button, .play-button {
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .play-button img {
+            width: 350px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <h1 id="welcome">Draw with artificial intelligence (AI)</h1>
+        <img src="img/instructions.png" alt="Instructions" class="instruction-img">
+        <div class="descriptions">
+            <h1 id="description1" class="description">Choose what to draw</h1>
+            <h1 id="description2" class="description">Draw the parts you would like to draw</h1>
+            <h1 id="description3" class="description">The AI will handle the rest. Voila!</h1>
+        </div>
+        
+        <a href="predict.html" class="play-button">
+            <img src="img/play-button.png" alt="Press the button to play">
+        </a>
+        <h1 id="button-text">Press the button to play</h1>
+        <br><br>
+        <button class="lang-button" onclick="changeLanguage('en')"><img src="img/language_en.png" alt="English"></button>
+        <button class="lang-button" onclick="changeLanguage('no')"><img src="img/language_no.png" alt="Norsk"></button>
+        <button class="lang-button" onclick="changeLanguage('sami')"><img src="img/language_sa.png" alt="Sami"></button>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                'welcome': 'Draw with artificial intelligence (AI)',
+                'description1': 'Choose what to draw',
+                'description2': 'Draw the parts you would like to draw',
+                'description3': 'The AI will handle the rest. Voila!',
+                'button': 'Press the button to play'
+            },
+            'no': {
+                'welcome': 'Tegn med kunstig intelligens (KI)',
+                'description1': 'Velg det du vil tegne',
+                'description2': 'Tegn en del av tegningen du ønsker å lage',
+                'description3': 'KIen tar seg av resten. Voila!',
+                'button': 'Trykk knappen for å starte spillet'
+            },
+            'sami': {
+                'welcome': 'Buresboahtin mas lea njealjádat intellehkta (KI)',
+                'description1': 'Vállje mii don háliidat čuohppat',
+                'description2': 'Čuohppa oassi govasta maid don háliidat dahkat',
+                'description3': 'KI sirdá soabadan. Voila!',
+                'button': 'Dárbbaš buttona álggahit ludi'
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.getElementById('welcome').textContent = translations[lang]['welcome'];
+            document.getElementById('description1').textContent = translations[lang]['description1'];
+            document.getElementById('description2').textContent = translations[lang]['description2'];
+            document.getElementById('description3').textContent = translations[lang]['description3'];
+            document.getElementById('button-text').textContent = translations[lang]['button'];
+        }
+    </script>
+</body>
+</html>

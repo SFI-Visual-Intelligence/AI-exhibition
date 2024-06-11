@@ -125,14 +125,11 @@ function initialise_param_object(){
   params.reset_button = null;
   params.model_sel = null;
   params.random_model_button = null;
-  params.text_title = null;
   params.text_temperature = null;
 
   // model selection
   params.font_scale = 8;
   params.potential_draw_button_list = [];
-
-  params.title_text = "Draw a bicycle.";
 
 
   return params;
@@ -183,37 +180,7 @@ function init_screen_size(p, params){
  *
 */
 
-
-function set_title_text(params, new_text) {
-  params.title_text = new_text.split('_').join(' ');
-  params.text_title.html(params.title_text);
-
-  params.text_title.position(params.screen_width/2 - 12 * params.title_text.length/2-85, 0);
-};
-
-var update_temperature_text = function(params) {
-    var the_color="rgba("+Math.round(255*params.temperature)+",0,"+255+",1)";
-    params.text_temperature.style("color", the_color); // ff990a
-    params.text_temperature.html(""+Math.round(params.temperature*100));
-  };
-
-
 function draw_gui(p, params){
-  // title
-  params.text_title = p.createP(params.title_text);
-  params.text_title.style("font-family", "Arial Black");
-  params.text_title.style("font-size", "40");
-  params.text_title.style("color", "#3393d1"); // ff990a
-  set_title_text(params, params.title_text);
-
-  // temperature text
-  params.text_temperature = p.createP();
-  params.text_temperature.style("font-family", "Courier New");
-  params.text_temperature.style("font-size", "16");
-  params.text_temperature.position(params.screen_width-40, params.screen_height-64);
-
-  update_temperature_text(params);
-
   //buttons
   generate_buttons(p, params);
 };
@@ -231,9 +198,7 @@ function generate_buttons(p, params){
       encode_strokes(p, params, params.strokes);
       clear_screen(p);
       draw_example(p, params, params.strokes);
-      set_title_text(params, 'Draw '+params.model.info.name+'.');
     }
-    set_title_text(params, 'Loading '+c+' model...');
     console.log('Loading '+c+' model...');
     ModelImporter.change_model(params.model, c, model_mode, call_back);
   };
@@ -243,52 +208,38 @@ function generate_buttons(p, params){
     clear_screen(p);
   };
 
-
-  var model_sel_event_wrapper = function() {
-    
-    model_sel = this.value();
-    model_sel_event(model_sel);
-    reset_button_event();
-  };
-
-  var temperature_slider_event = function() {
-    params.temperature = params.temperature_slider.value()/100;
-    clear_screen(p);
-    //draw_example(params.strokes, params.start_x, params.start_y, params.line_color);
-    update_temperature_text(params);
-  };
-
-
-  var longest_draw_name = 0;
-  var draw_name;
   var draw_button_shift;
   var draw_button_position;
 
-  reset_button = p.createButton('clear drawing');
-  reset_button.position(25, 1900 - params.button_height * 2);
-  reset_button.size(1030, params.button_height);
-  reset_button.mousePressed(reset_button_event); // attach button listener
+    // Clear button with image
+    var clearImgSrc = "img/clear.png"; // Path to clear button image
+    params.reset_button = p.createImg(clearImgSrc, "Clear drawing");
+    params.reset_button.style('width', '225px');  // Use the natural size of the image
+    params.reset_button.style('height', '225px'); // Use the natural size of the image
+    params.reset_button.mousePressed(reset_button_event); // Attach button listener
 
-  draw_button_position = 27;
-  draw_button_shift = 20;
-  for (var i=0;i<params.class_list.length;i++) {
+    // Calculate position to center the button above other buttons
+    var clearButtonX = (params.screen_width - params.reset_button.width) / 2;
+    var clearButtonY = 1900 - params.button_height * 2 - params.reset_button.height - 10; // 10px above the other buttons
+    params.reset_button.position(clearButtonX, clearButtonY);
 
-    draw_name = params.class_list[i];
-    
-    params.potential_draw_button_list[i] = p.createButton(draw_name, draw_name);
-    params.potential_draw_button_list[i].position(draw_button_position, 1920 - params.button_height);
-    params.potential_draw_button_list[i].size(params.button_width, params.button_height);
-    params.potential_draw_button_list[i].mousePressed(model_sel_event_wrapper);
-    draw_button_position += (draw_button_shift + params.button_width);
+  var draw_button_position = 27;
+  var draw_button_shift = 20;
+
+  for (let i = 0; i < params.class_list.length; i++) {
+      let draw_name = params.class_list[i];
+      let imgSrc = "img/" + draw_name + ".png"; 
+
+      params.potential_draw_button_list[i] = p.createImg(imgSrc, draw_name);
+      params.potential_draw_button_list[i].position(draw_button_position, 1920 - params.button_height);
+      params.potential_draw_button_list[i].size(params.button_width, params.button_height);
+      params.potential_draw_button_list[i].mousePressed(function() {
+          model_sel_event(draw_name);
+          reset_button_event();
+      });
+      draw_button_position += (draw_button_shift + params.button_width);
   }
 
-  /*
-  // temp
-  params.temperature_slider = p.createSlider(1, 100, params.temperature*100);
-  params.temperature_slider.position(0*params.screen_width/2-10*0+10, params.screen_height-27);
-  params.temperature_slider.style('width', params.screen_width/1-25+'px');
-  params.temperature_slider.changed(temperature_slider_event);
-  */
 };
 
 
@@ -386,8 +337,8 @@ function draw_example(p, params, example_strokes){
 
 
 function clear_screen(p) {
-  p.background(20, 20, 20, 255);
-  p.fill(20, 20, 20, 255);
+  p.background(255, 255, 255, 255);
+  p.fill(255, 255, 255, 255);
 };
 
 
@@ -713,5 +664,3 @@ function the_model_has_taken_over(p, params) {
  *
  *
 */
-
-
