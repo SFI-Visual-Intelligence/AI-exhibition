@@ -57,7 +57,26 @@ var sketch = function( p ) {
   
 var custom_p5 = new p5(sketch, 'sketch');
 
+document.addEventListener('DOMContentLoaded', function() {
+  var timeoutId;
 
+  function redirectToIntroduction() {
+      window.location.href = '/'; // Adjust the URL to your introduction page
+  }
+
+  function resetTimeout() {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(redirectToIntroduction, 120000); // 120000 ms = 2 minutes
+  }
+
+  // Reset the timeout whenever these events are triggered
+  document.addEventListener('mousemove', resetTimeout);
+  document.addEventListener('keypress', resetTimeout);
+  document.addEventListener('touchstart', resetTimeout);
+
+  // Initialize the timeout
+  resetTimeout();
+});
 
 function initialise_param_object(){
   const params = new Object();
