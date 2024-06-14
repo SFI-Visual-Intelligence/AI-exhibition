@@ -34,25 +34,19 @@ var sketch = function( p ) {
 
     init_model(params, model_raw_data);
     init_screen_size(p, params);
-
+  
     draw_gui(p, params);
     restart(p, params);
     p.createCanvas(params.screen_width, params.screen_height);
     p.frameRate(60);
-    //clear_screen(p);
+  
+    // Register touch event handlers
+    p.touchStarted = touchStarted;
+    p.touchMoved = touchMoved;
+    p.touchEnded = touchEnded;
+  
     console.log('ready.');
-    
   };
-
-
-  p.draw = function() {
-    draw_the_stuff(p, params, tracking);
-  }
-
-  p.mousePressed = function() {
-    releaseTimeout(p, params);
-  }
-};
 
   
 var custom_p5 = new p5(sketch, 'sketch');
@@ -477,7 +471,33 @@ function releaseTimeout(p, params){
  *
  *
 */
+function touchStarted() {
+  const touch = getTouch();
+  devicePressed(params, tracking, touch.x, touch.y);
+  return false; // Prevent default behavior
+}
 
+function touchMoved() {
+  const touch = getTouch();
+  if (tracking.down) {
+    tracking.x = touch.x;
+    tracking.y = touch.y;
+  }
+  return false; // Prevent default behavior
+}
+
+function touchEnded() {
+  deviceReleased(tracking);
+  return false; // Prevent default behavior
+}
+
+function getTouch() {
+  // Get the first touch point
+  if (touches.length > 0) {
+    return { x: touches[0].x, y: touches[0].y };
+  }
+  return { x: 0, y: 0 };
+}
 
 function deviceReleased (tracking) {
   "use strict";
