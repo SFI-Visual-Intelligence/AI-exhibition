@@ -485,11 +485,20 @@ function deviceReleased (tracking) {
 }
 
 function devicePressed(params, tracking, x, y) {
-  if (y < (params.screen_height-60)) {
-    tracking.x = x;
-    tracking.y = y;
-    if (!tracking.down) {
-      tracking.down = true;
+  // Define the bounds of the clear button
+  var clearButtonX = (params.screen_width - params.reset_button.width) / 2;
+  var clearButtonY = 1900 - params.button_height * 2 - params.reset_button.height - 10;
+  var clearButtonWidth = params.reset_button.width;
+  var clearButtonHeight = params.reset_button.height;
+
+  // Check if the click is outside the clear button
+  if (!(x >= clearButtonX && x <= clearButtonX + clearButtonWidth && y >= clearButtonY && y <= clearButtonY + clearButtonHeight)) {
+    if (y < (params.screen_height - 60)) {
+      tracking.x = x;
+      tracking.y = y;
+      if (!tracking.down) {
+        tracking.down = true;
+      }
     }
   }
 };
