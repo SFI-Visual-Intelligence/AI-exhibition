@@ -5,23 +5,27 @@
     <meta charset="utf-8">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%; /* Make sure the body takes full viewport height */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column; /* Stack children vertically */
+        }
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #cccaca;
-            margin: 0;
-            padding: 0;
             text-align: center; /* Center aligns everything in the body */
-        }
-        .banner {
-            width: 50%; /* Adjusted size to 50% */
-            height: auto; /* Maintain aspect ratio */
-            display: block; /* Makes the img a block element */
-            margin: 0 auto; /* Centers the image horizontally */
+            flex: 1; /* Allows body to expand and fill available space */
+            justify-content: space-between; /* Space between top and bottom contents */
         }
         .center {
-            margin-top: 20px; /* Adjusted for better spacing */
+            flex-grow: 1; /* Allows this div to grow and push footer down */
         }
-        .instruction-img {
+        .footer {
+            margin-bottom: 20px; /* Space from bottom */
+        }
+        .banner, .instruction-img {
             width: 80%; /* Adjust size as needed */
             height: auto;
             margin: 20px auto; /* Centering the image */
@@ -46,6 +50,11 @@
             width: 350px;
             height: auto;
         }
+        #button-text {
+            height: 120px; /* Adjust this value based on your needs */
+            line-height: 60px; /* This helps vertically center the text */
+            margin: 20px 0; /* Provide some spacing around the text */
+        }
     </style>
 </head>
 <body>
@@ -62,7 +71,8 @@
             <img src="img/play-button.png" alt="Press the button to play">
         </a>
         <h1 id="button-text">Press the button to play</h1>
-        <br><br>
+    </div>
+    <div class="footer">
         <button class="lang-button" onclick="changeLanguage('en')"><img src="img/language_en.png" alt="English"></button>
         <button class="lang-button" onclick="changeLanguage('no')"><img src="img/language_no.png" alt="Norsk"></button>
         <button class="lang-button" onclick="changeLanguage('sami')"><img src="img/language_sa.png" alt="Sami"></button>
