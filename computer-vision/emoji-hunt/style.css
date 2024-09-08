@@ -1,0 +1,184 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevents scrollbars from appearing */
+  background-color: black;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+h1 {
+  font-style: italic;
+  color: #FF6F00;
+}
+
+#timer {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center; /* Align items vertically */
+  white-space: nowrap; /* Prevent wrapping */
+  font-size: 160px;
+  color: rgb(255, 255, 255);
+  background-color: rgba(0, 0, 0, 0.8); /* Optional: for better visibility */
+  z-index: 1001;
+}
+#timeLeft {
+  display: inline-block;
+  width: 150px; /* Enough to fit two digits comfortably */
+  text-align: right; /* Align the text to the right */
+  z-index: 1001;
+  margin-right: 20px;
+}
+
+#timerImage {
+  width: 50px; /* Adjust size as needed */
+  height: 50px; /* Adjust size as needed */
+  z-index: 1001;
+}
+video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover; /* Ensures the video covers the full area without distortion */
+  z-index: 1; /* Ensures it stays at the back of other content */
+}
+
+button {
+  padding: 10px;
+  float: left;
+  margin: 5px 3px 5px 10px;
+}
+
+.removed {
+  display: none;
+}
+
+#status {
+  position: fixed;      /* Fixed position relative to the viewport */
+  top: 200px;               /* Align to the top of the viewport */
+  left: 50%;            /* Center horizontally */
+  transform: translateX(-50%); /* Offset the element to truly center it horizontally */
+  z-index: 1002;        /* High z-index to ensure it's on top */
+  font-size: 120px;
+  color: rgb(255, 255, 255);
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  padding: 20px;        /* Some padding around the text */
+  border-radius: 10px;  /* Rounded corners */
+  text-align: center;   /* Center the text inside the element */
+}
+
+#message {
+  /*display:none;*/
+  position: fixed;      /* Fixed position relative to the viewport */
+  top: 50%;             /* Position at the center vertically */
+  left: 50%;            /* Position at the center horizontally */
+  transform: translate(-50%, -50%); /* Offset the element to truly center it */
+  z-index: 1002;        /* High z-index to ensure it's on top */
+  /*background: rgba(0, 0, 0, 0.8); Semi-transparent black background */
+  color: rgb(255, 255, 255);         /* White text color */
+  padding: 20px;        /* Some padding around the text */
+  border-radius: 10px;  /* Rounded corners */
+  font-size: 120px;      /* Larger font size */
+  text-align: center;   /* Center the text inside the element */
+}
+
+#predict {
+  color: green;
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.emoji-image {
+  width: 10vw;  /* 10% of the viewport width */
+  height: 10vw; /* 10% of the viewport height */
+}
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+#foundObjectsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#foundObjectsList li {
+  margin: 10px;
+  font-size: 100px;
+  color: #3ff52e;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.object-boxes {
+  position: fixed; /* Ensure this is positioned relative to the viewport */
+  bottom: 20px; /* Position it at the bottom of the viewport */
+  left: 50%; /* Center it horizontally */
+  transform: translateX(-50%); /* Offset the element to truly center it */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 1000; /* High z-index to ensure it's on top of the video */
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: for better visibility */
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.box {
+  width: 60px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+  border: 2px solid gray; /* Neutral box */
+}
+
+.found {
+  border-color: green;
+}
+
+.not-found {
+  border-color: red;
+}
+
+.checkmark, .cross {
+  font-size: 24px;
+  color: white;
+}
+
+.prediction {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 18px;
+  z-index: 1000; /* Ensure it's visible above other content */
+  text-align: center;
+  width: auto;
+  max-width: 80%; /* Adjust based on your layout */
+}
+
+.checkmark {
+  color: green;
+  font-size: 24px;
+}
+
+.cross {
+  color: red;
+  font-size: 24px;
+}

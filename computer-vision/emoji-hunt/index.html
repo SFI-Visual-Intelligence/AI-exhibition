@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EMOJI HUNT</title>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #cacaca;
+            text-align: center;
+            flex: 1;
+            justify-content: space-between;
+        }
+        .center {
+            flex-grow: 1;
+        }
+        .footer {
+            margin-bottom: 20px;
+        }
+        .banner, .instruction-img {
+            width: 80%;
+            height: auto;
+            margin: 20px auto;
+        }
+        .descriptions {
+            display: flex;
+            justify-content: space-around;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+        .description {
+            flex: 1;
+            padding: 0 10px;
+            text-align: center;
+        }
+        .lang-button, .play-button {
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .logo {
+            width: 250px;
+            height: auto;
+            margin-bottom: 20px; /* Space between logo and title */
+        }
+        .play-button img {
+            width: 350px;
+            height: auto;
+        }
+        #button-text {
+            height: 120px;
+            line-height: 60px;
+            margin: 20px 0;
+        }
+        #welcome {
+            font-size: 100px; 
+            margin: 0; 
+            color: #5988df;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <div class="title-container">
+            <img src="img/emoji_logo.png" alt="Logo" class="logo">
+            <h1 id="welcome">EMOJI HUNT</h1>
+        </div>
+        <img src="img/instructions.png" alt="Instructions" class="instruction-img">
+        <div class="descriptions">
+            <h1 id="description1" class="description">Find the object that looks like the emoji</h1>
+            <h1 id="description2" class="description">Hold the object in front of the camera</h1>
+            <h1 id="description3" class="description">Find all 10 objects before the time runs out!</h1>
+        </div>
+        
+        <a href="game.html?lang=en" class="play-button" id="play-link">
+            <img src="img/play-button.png" alt="Press the button to play">
+        </a>
+        <h1 id="button-text">Press the button to play</h1>
+    </div>
+    <div class="footer">
+        <button class="lang-button" onclick="changeLanguage('en')"><img src="img/language_en.png" alt="English"></button>
+        <button class="lang-button" onclick="changeLanguage('no')"><img src="img/language_no.png" alt="Norsk"></button>
+        <button class="lang-button" onclick="changeLanguage('sami')"><img src="img/language_sa.png" alt="Sami"></button>
+    </div>
+
+
+    <script>
+        const translations = {
+            'en': {
+                'welcome': 'EMOJI HUNT',
+                'description1': 'Find the object that looks like the emoji',
+                'description2': 'Hold the object in front of the camera',
+                'description3': 'Find all 10 objects before the time runs out!',
+                'button': 'Press the button to play'
+            },
+            'no': {
+                'welcome': 'EMOJI JAKT',
+                'description1': 'Finn gjenstanden som ligner på emojien',
+                'description2': 'Hold gjenstanden foran kameraet',
+                'description3': 'Finn alle gjenstandene før tiden er ute',
+                'button': 'Trykk knappen for å starte spillet'
+            },
+            'sami': {
+                'welcome': 'EMOJI-BIVDU',
+                'description1': 'Oza áđa mii sulastahttá emoji',
+                'description2': 'Čájet áđa kamerai',
+                'description3': 'Gávnna buot áđaid áigemearis!',
+                'button': 'Speallu álgá go coahkkalat boalu'
+            }
+        };
+
+        function changeLanguage(lang) {
+    document.getElementById('welcome').textContent = translations[lang]['welcome'];
+    document.getElementById('description1').textContent = translations[lang]['description1'];
+    document.getElementById('description2').textContent = translations[lang]['description2'];
+    document.getElementById('description3').textContent = translations[lang]['description3'];
+    document.getElementById('button-text').textContent = translations[lang]['button'];
+    document.getElementById('play-link').href = `game.html?lang=${lang}`; 
+}
+    </script>
+</body>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang') || 'en'; // Get the language from the URL or default to English
+    changeLanguage(lang); // Apply the language settings
+});
+</script>

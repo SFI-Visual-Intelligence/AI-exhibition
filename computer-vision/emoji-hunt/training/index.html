@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Transfer Learning - TensorFlow.js</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+  </head>  
+  <body>
+    <h1>Object detection model training</h1>
+    
+    <p id="status">Awaiting TF.js load</p>
+    
+    <video id="webcam" autoplay muted></video>
+    
+    <button id="enableCam">Enable Webcam</button>
+    <button class="dataCollector" data-1hot="0" data-name="scallop">scallop</button>
+    <button class="dataCollector" data-1hot="1" data-name="watering can">watering can</button>
+    <button class="dataCollector" data-1hot="2" data-name="bomb">bomb</button>
+    <button class="dataCollector" data-1hot="3" data-name="dinosaur">dinosaur</button>
+    <button class="dataCollector" data-1hot="4" data-name="spoon">spoon</button>
+    <button class="dataCollector" data-1hot="5" data-name="foraminifera">foraminifera</button>
+    <button class="dataCollector" data-1hot="6" data-name="football boot">football boot</button>
+    <button class="dataCollector" data-1hot="7" data-name="bottle">bottle</button>
+    <button class="dataCollector" data-1hot="8" data-name="teddy bear">teddy bear</button>
+    <button class="dataCollector" data-1hot="9" data-name="chainsaw">chainsaw</button>
+    <button class="dataCollector" data-1hot="10" data-name="computer mouse">computer mouse</button>
+    <button class="dataCollector" data-1hot="11" data-name="flag">flag</button>
+    <button class="dataCollector" data-1hot="12" data-name="sword">sword</button>
+    <button class="dataCollector" data-1hot="13" data-name="potato">potato</button>
+    <button class="dataCollector" data-1hot="14" data-name="banana">banana</button>
+    <button class="dataCollector" data-1hot="15" data-name="paint brush">paint brush</button>
+
+    <button id="train">Train &amp; Predict!</button>
+    <button id="reset">Reset</button>
+
+    <!-- Import TensorFlow.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" type="text/javascript"></script>
+
+    <!-- Import the page's JavaScript to do some stuff -->
+    <script type="module" src="/script.js"></script>
+  </body>
+</html>
