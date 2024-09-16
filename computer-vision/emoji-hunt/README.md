@@ -1,14 +1,21 @@
-AI exhibit - Computer vision / Object detection
+# AI exhibit - Computer vision / Object detection
 
-INSTRUCTIONS:
+## INSTRUCTIONS:
 ----
 Run:
 
-python/python3 -m http.server
+`python/python3 -m http.server`
 
 Access game from browser:
 
-localhost:8000
+`localhost:8000`
+
+### Access to Webcam
+The Browser needs to access the webcam, you need to change the settings for this. 
+For Chrome, you need to follow these steps.
+1. Navigate to `chrome://flags/#unsafely-treat-insecure-origin-as-secure` in Chrome.
+2. Find and enable the `Insecure origins treated as secure` section.
+3. Add any addresses you want to ignore the secure origin policy for. Remember to include the port number too (if required). Here: `localhost:8000`
 
 
 -----
