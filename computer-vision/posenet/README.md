@@ -8,4 +8,5 @@ This is coded in javascript.
 * Go to the folder of the demo, and run a local server using: `python -m http.server`
 * open your browser and enter the url `localhost:8000` (you may need to grant access to localhost to your browser)
 
+![Screenshot of Posenet](ScreenshotPosenet.png "Screenshot of Posenet")
 
