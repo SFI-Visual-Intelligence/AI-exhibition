@@ -21,16 +21,28 @@ async function loadAndPredict() {
 
     const net = await posenet.load();
 
-    function detectPose() {
+    /*function detectPose() {
         net.estimateSinglePose(video, {
             flipHorizontal: false
         }).then(pose => {
             drawPose(pose);
             requestAnimationFrame(detectPose);
+        });*/
+    // Function for multiple poses
+    function detectPose() {
+        net.estimateMultiplePoses(video, {
+            flipHorizontal: false,
+            maxDetections: 5,  // Adjust this value based on expected number of people
+            scoreThreshold: 0.5,
+            nmsRadius: 20  // Adjust non-max suppression radius if needed
+        }).then(poses => {
+            drawPoses(poses);
+            requestAnimationFrame(detectPose);
         });
     }
+    
 
-    function drawPose(pose) {
+    function drawPoses(poses) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'red'; // Here you change the color of the circle
         ctx.strokeStyle = 'white'; // Here you change the color of the line 
@@ -38,85 +50,87 @@ async function loadAndPredict() {
         // List of eye keypoints
         const eyePoints = ['leftEye', 'rightEye'];
         
-        pose.keypoints.forEach((point,index) => {
-            if ((point.score > 0.5 && eyePoints.includes(point.part))) {
+        poses.forEach(pose => {
+
+            pose.keypoints.forEach((point,index) => {
+                if ((point.score > 0.5 && eyePoints.includes(point.part))) {
+                    ctx.beginPath();
+                    ctx.arc(point.position.x, point.position.y, 10, 0, 2 * Math.PI); // radius = 5 here
+                    ctx.fill();
+                    
+                }
+            });
+
+            // Define the skeleton connections
+            const adjacentKeyPoints = posenet.getAdjacentKeyPoints(pose.keypoints, 0.5);
+
+            //adjacentKeyPoints.forEach((keypoints) => {
+            //    ctx.beginPath();
+            //    ctx.moveTo(keypoints[0].position.x, keypoints[0].position.y);
+            //    ctx.lineTo(keypoints[1].position.x, keypoints[1].position.y);
+            //    ctx.stroke();  
+            //});
+
+            // Draw bones
+            adjacentKeyPoints.forEach((keypoints) => {
+                const gradient = ctx.createLinearGradient(keypoints[0].position.x, keypoints[0].position.y, keypoints[1].position.x, keypoints[1].position.y);
+                gradient.addColorStop(0, "white");
+                gradient.addColorStop(0.5, "gray");
+                gradient.addColorStop(1, "white");
+
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 10;
+                ctx.lineCap = 'round';  // This makes the ends of the line rounded
+
                 ctx.beginPath();
-                ctx.arc(point.position.x, point.position.y, 10, 0, 2 * Math.PI); // radius = 5 here
-                ctx.fill();
+                ctx.moveTo(keypoints[0].position.x, keypoints[0].position.y);
+                ctx.lineTo(keypoints[1].position.x, keypoints[1].position.y);
+                ctx.stroke();
+            });
+
+
+            // Get keypoints for shoulders and hips
+            const leftShoulder = pose.keypoints.find(point => point.part === 'leftShoulder');
+            const rightShoulder = pose.keypoints.find(point => point.part === 'rightShoulder');
+            const leftHip = pose.keypoints.find(point => point.part === 'leftHip');
+            const rightHip = pose.keypoints.find(point => point.part === 'rightHip');
+
+            if (leftShoulder && rightShoulder && leftHip && rightHip &&
+                leftShoulder.score > 0.5 && rightShoulder.score > 0.5 &&
+                leftHip.score > 0.5 && rightHip.score > 0.5) {
                 
-            }
-        });
+                const numRibs = 10;
 
-        // Define the skeleton connections
-        const adjacentKeyPoints = posenet.getAdjacentKeyPoints(pose.keypoints, 0.5);
+                // Display ribs
+                for (let i = 0; i <= numRibs; i++) {
+                    const fraction = i / numRibs;
+                    const startX = leftShoulder.position.x + fraction * (leftHip.position.x - leftShoulder.position.x)/2;
+                    const startY = leftShoulder.position.y + fraction * (leftHip.position.y - leftShoulder.position.y)/2;
+                    const endX = rightShoulder.position.x + fraction * (rightHip.position.x - rightShoulder.position.x)/2;
+                    const endY = rightShoulder.position.y + fraction * (rightHip.position.y - rightShoulder.position.y)/2;
 
-        //adjacentKeyPoints.forEach((keypoints) => {
-        //    ctx.beginPath();
-        //    ctx.moveTo(keypoints[0].position.x, keypoints[0].position.y);
-        //    ctx.lineTo(keypoints[1].position.x, keypoints[1].position.y);
-        //    ctx.stroke();  
-        //});
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.strokeStyle = 'gray';
+                    ctx.lineWidth = 5;
+                    ctx.stroke();
+                }
+                // Calculer le milieu des épaules et des hanches
+                const midShoulderX = (leftShoulder.position.x + rightShoulder.position.x) / 2;
+                const midShoulderY = (leftShoulder.position.y + rightShoulder.position.y) / 2;
+                const midHipX = (leftHip.position.x + rightHip.position.x) / 2;
+                const midHipY = (leftHip.position.y + rightHip.position.y) / 2;
 
-        // Draw bones
-        adjacentKeyPoints.forEach((keypoints) => {
-            const gradient = ctx.createLinearGradient(keypoints[0].position.x, keypoints[0].position.y, keypoints[1].position.x, keypoints[1].position.y);
-            gradient.addColorStop(0, "white");
-            gradient.addColorStop(0.5, "gray");
-            gradient.addColorStop(1, "white");
-
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 10;
-            ctx.lineCap = 'round';  // This makes the ends of the line rounded
-
-            ctx.beginPath();
-            ctx.moveTo(keypoints[0].position.x, keypoints[0].position.y);
-            ctx.lineTo(keypoints[1].position.x, keypoints[1].position.y);
-            ctx.stroke();
-        });
-
-
-        // Get keypoints for shoulders and hips
-        const leftShoulder = pose.keypoints.find(point => point.part === 'leftShoulder');
-        const rightShoulder = pose.keypoints.find(point => point.part === 'rightShoulder');
-        const leftHip = pose.keypoints.find(point => point.part === 'leftHip');
-        const rightHip = pose.keypoints.find(point => point.part === 'rightHip');
-
-        if (leftShoulder && rightShoulder && leftHip && rightHip &&
-            leftShoulder.score > 0.5 && rightShoulder.score > 0.5 &&
-            leftHip.score > 0.5 && rightHip.score > 0.5) {
-            
-            const numRibs = 10;
-
-            // Display ribs
-            for (let i = 0; i <= numRibs; i++) {
-                const fraction = i / numRibs;
-                const startX = leftShoulder.position.x + fraction * (leftHip.position.x - leftShoulder.position.x)/2;
-                const startY = leftShoulder.position.y + fraction * (leftHip.position.y - leftShoulder.position.y)/2;
-                const endX = rightShoulder.position.x + fraction * (rightHip.position.x - rightShoulder.position.x)/2;
-                const endY = rightShoulder.position.y + fraction * (rightHip.position.y - rightShoulder.position.y)/2;
-
+                // Dessiner la colonne vertébrale
                 ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(endX, endY);
+                ctx.moveTo(midShoulderX, midShoulderY);
+                ctx.lineTo(midHipX, midHipY);
                 ctx.strokeStyle = 'gray';
-                ctx.lineWidth = 5;
+                ctx.lineWidth = 10;
                 ctx.stroke();
             }
-            // Calculer le milieu des épaules et des hanches
-            const midShoulderX = (leftShoulder.position.x + rightShoulder.position.x) / 2;
-            const midShoulderY = (leftShoulder.position.y + rightShoulder.position.y) / 2;
-            const midHipX = (leftHip.position.x + rightHip.position.x) / 2;
-            const midHipY = (leftHip.position.y + rightHip.position.y) / 2;
-
-            // Dessiner la colonne vertébrale
-            ctx.beginPath();
-            ctx.moveTo(midShoulderX, midShoulderY);
-            ctx.lineTo(midHipX, midHipY);
-            ctx.strokeStyle = 'gray';
-            ctx.lineWidth = 10;
-            ctx.stroke();
-        }
-
+        });
     }
 
     detectPose();
